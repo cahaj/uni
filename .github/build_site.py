@@ -13,7 +13,8 @@ What it does:
      README.md is rendered below its listing.
 
 Directory listings also get keyboard navigation (see KEYNAV below): Up/Down
-select a row, Enter opens it, Escape clears the selection.
+select a row, Left/Right switch between a markdown file's rendered and raw
+links, Enter opens, Escape clears the selection.
 
 All links are relative, so the site works at the domain root, under a
 project path (user.github.io/repo/) and on a custom domain.
@@ -166,7 +167,7 @@ STYLE = """
   table.files tr.sel td:first-child { box-shadow: -0.5rem 0 0 var(--sel); }
   table.files tr.sel td:last-child { box-shadow: 0.5rem 0 0 var(--sel); }
   table.files tr.sel td.icon,
-  table.files tr.sel td.name a:first-child { color: var(--accent); }
+  table.files tr.sel a:focus { color: var(--accent); }
   table.files tr.up td.name { color: var(--ink-faded); }
   table.files a { color: inherit; text-decoration: none; padding: 0; }
   table.files a:hover { color: var(--accent); background: none; }
@@ -239,7 +240,9 @@ STYLE = """
 # The page behaves normally until Up or Down is pressed. That selects the first
 # row and from then on Up/Down move the selection (no wrap-around), Enter opens
 # the row's main link, and Escape clears the selection and gives the arrow keys
-# back to the browser. The selected row's link really has focus, so Enter, Tab,
+# back to the browser. On rows that have a "(raw)" link (markdown files), Right
+# moves the selection from the rendered page to the raw file and Left moves it
+# back; Up/Down always land on the main link of the next row. The selected row's link really has focus, so Enter, Tab,
 # Ctrl/Cmd+Enter (new tab) and screen readers all work natively; Tab-ing to a
 # link also marks its row. Keys pressed with Shift/Ctrl/Alt/Meta are ignored.
 KEYNAV = """<script>
@@ -275,6 +278,12 @@ KEYNAV = """<script>
       if (cur < 0) { select(0, true); return; }
       var next = cur + (e.key === 'ArrowDown' ? 1 : -1);
       select(Math.max(0, Math.min(rows.length - 1, next)), true);
+    } else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && cur >= 0) {
+      var raw = rows[cur].querySelector('td.name a.raw');
+      if (raw) {
+        e.preventDefault();
+        (e.key === 'ArrowRight' ? raw : mainLink(rows[cur])).focus({ preventScroll: true });
+      }
     } else if (e.key === 'Escape' && cur >= 0) {
       var active = document.activeElement;
       if (active && table.contains(active)) active.blur();
