@@ -32,32 +32,37 @@ MD_EXTENSIONS = ["fenced_code", "tables", "toc", "sane_lists"]
 
 FAVICON = (
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E"
-    "%3Crect width='100' height='100' rx='14' fill='%23E7E4DC'/%3E%3Ctext x='50' y='78' "
+    "%3Crect width='100' height='100' rx='14' fill='%231D1A17'/%3E%3Ctext x='50' y='78' "
     "font-family='Courier New,Courier,monospace' font-weight='700' font-size='80' "
-    "text-anchor='middle' fill='%2322232A'%3E%C5%98%3C/text%3E%3C/svg%3E"
+    "text-anchor='middle' fill='%23D6CEBD'%3E%C5%98%3C/text%3E%3C/svg%3E"
 )
 
 NOISE = (
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E"
     "%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' "
-    "stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.22 0 0 0 0 0.18 "
-    "0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E"
+    "stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.80 0 0 0 0 0.70 "
+    "0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E"
     "%3C/svg%3E"
 )
 
 STYLE = """
   :root {
-    color-scheme: light;
-    --paper: #E7E4DC;
-    --paper-edge: #CFCBC0;
-    --ink: #22232A;
-    --ink-faded: #6D6B68;
-    --ribbon: #B3372B;
+    color-scheme: dark;
+    --paper: #1D1A17;        /* warm charcoal-brown page */
+    --paper-edge: #100E0C;   /* vignette at the page edges */
+    --ink: #D6CEBD;          /* soft cream text */
+    --ink-faded: #918878;    /* warm grey for secondary text */
+    --accent: #D9724F;       /* muted terracotta: links, hover, markers */
+    --rule: rgba(145, 136, 120, 0.35);
+    --rule-soft: rgba(145, 136, 120, 0.22);
+    --tint: rgba(255, 240, 215, 0.07);   /* inline code background */
+    --inset: rgba(0, 0, 0, 0.28);        /* code block background */
     --font: "Courier Prime", "Courier New", Courier, "Nimbus Mono PS", monospace;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
   html, body { min-height: 100dvh; margin: 0; }
+  html { scrollbar-color: #4A443B #1D1A17; }
 
   body {
     display: flex;
@@ -78,7 +83,7 @@ STYLE = """
       calc(1.5rem + env(safe-area-inset-left, 0px));
   }
 
-  ::selection { background: var(--ribbon); color: var(--paper); }
+  ::selection { background: var(--accent); color: var(--paper); }
 
   main {
     width: 100%;
@@ -89,14 +94,14 @@ STYLE = """
   a {
     color: var(--ink);
     text-decoration: underline;
-    text-decoration-color: var(--ribbon);
+    text-decoration-color: var(--accent);
     text-decoration-thickness: 2px;
     text-underline-offset: 0.25em;
     padding: 0 0.15em;
     transition: color 0.15s ease, background-color 0.15s ease;
   }
-  a:hover { color: var(--paper); background-color: var(--ribbon); text-decoration: none; }
-  a:focus-visible { outline: 2px dashed var(--ribbon); outline-offset: 3px; }
+  a:hover { color: var(--paper); background-color: var(--accent); text-decoration: none; }
+  a:focus-visible { outline: 2px dashed var(--accent); outline-offset: 3px; }
 
   /* ---- title: i.ř.xyz/current/path/ ---- */
   h1.site-title {
@@ -108,11 +113,11 @@ STYLE = """
     overflow-wrap: anywhere;
   }
   h1.site-title a { color: inherit; text-decoration: none; padding: 0; background: none; }
-  h1.site-title a:hover { color: var(--ribbon); background: none; }
+  h1.site-title a:hover { color: var(--accent); background: none; }
   h1.site-title .path,
   h1.site-title .path a,
   h1.site-title .slash { font-weight: 400; color: var(--ink-faded); }
-  h1.site-title .path a:hover { color: var(--ribbon); }
+  h1.site-title .path a:hover { color: var(--accent); }
 
   .meta-inline {
     display: flex;
@@ -125,21 +130,22 @@ STYLE = """
     color: var(--ink-faded);
   }
   .meta-sep { color: var(--ink-faded); user-select: none; }
-  .meta-inline a { text-decoration: none; }
+  .meta-inline a { text-decoration: none; padding: 0; }
+  .meta-inline a:hover { color: var(--accent); background: none; }
 
   /* ---- plain thin rule ---- */
   .rule {
     height: 0;
     margin: 1.25rem 0;
     border: 0;
-    border-top: 1px solid rgba(109, 107, 104, 0.35);
+    border-top: 1px solid var(--rule);
   }
 
   /* ---- directory listing ---- */
   table.files { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
   table.files td {
     padding: 0.4rem 0;
-    border-bottom: 1px solid rgba(109, 107, 104, 0.25);
+    border-bottom: 1px solid var(--rule-soft);
     vertical-align: baseline;
   }
   table.files td.icon { width: 1.75rem; color: var(--ink-faded); }
@@ -150,11 +156,8 @@ STYLE = """
   }
   table.files td.name { overflow-wrap: anywhere; }
   table.files tr.up td.name { color: var(--ink-faded); }
-  table.files a {
-    color: inherit; text-decoration: none;
-    padding: 0 0.15em; margin: 0 -0.15em; /* highlight padding without shifting the text */
-  }
-  table.files a:hover { color: var(--paper); background-color: var(--ribbon); }
+  table.files a { color: inherit; text-decoration: none; padding: 0; }
+  table.files a:hover { color: var(--accent); background: none; }
   table.files td.size {
     text-align: right;
     white-space: nowrap;
@@ -164,11 +167,10 @@ STYLE = """
   }
   table.files a.rendered {
     margin: 0 0 0 0.5rem;
-    padding: 0 0.15em;
     color: var(--ink-faded);
     font-size: 0.85rem;
   }
-  table.files a.rendered:hover { color: var(--paper); background-color: var(--ribbon); }
+  table.files a.rendered:hover { color: var(--accent); }
 
   table.files + .md { margin-top: 2rem; }
 
@@ -179,7 +181,7 @@ STYLE = """
     margin: 2rem 0 0.75rem; line-height: 1.3; font-weight: 700;
   }
   .md h1 { font-size: 1.9rem; }
-  .md h2 { font-size: 1.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid rgba(109, 107, 104, 0.35); }
+  .md h2 { font-size: 1.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--rule); }
   .md h3 { font-size: 1.25rem; }
   .md h4 { font-size: 1.1rem; }
   .md h5, .md h6 { font-size: 1rem; }
@@ -187,37 +189,37 @@ STYLE = """
   .md p, .md ul, .md ol, .md pre, .md blockquote, .md table, .md details { margin: 0 0 1rem; }
   .md ul, .md ol { padding-left: 1.75rem; }
   .md li > ul, .md li > ol { margin: 0.25rem 0; }
-  .md li::marker { color: var(--ribbon); }
+  .md li::marker { color: var(--accent); }
   .md code {
     font-family: inherit; font-size: 0.95em;
     padding: 0.1em 0.3em; border-radius: 2px;
-    background: rgba(34, 35, 42, 0.07);
+    background: var(--tint);
   }
   .md pre {
     padding: 0.9rem 1rem; overflow-x: auto; line-height: 1.5;
-    border: 1px solid var(--paper-edge); border-radius: 2px;
-    background: rgba(34, 35, 42, 0.06);
+    border: 1px solid var(--rule-soft); border-radius: 2px;
+    background: var(--inset);
   }
   .md pre code { padding: 0; background: none; font-size: 0.9rem; }
   .md blockquote {
     margin-left: 0; padding: 0.1rem 1rem;
-    border-left: 3px solid var(--ribbon); color: var(--ink-faded);
+    border-left: 3px solid var(--accent); color: var(--ink-faded);
   }
   .md table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
-  .md th, .md td { padding: 0.4rem 0.75rem; border: 1px solid var(--paper-edge); }
+  .md th, .md td { padding: 0.4rem 0.75rem; border: 1px solid var(--rule); }
   .md th { text-align: left; border-bottom: 2px solid var(--ink); }
   .md img { max-width: 100%; height: auto; }
   .md kbd {
     padding: 0.05em 0.4em; border: 1px solid var(--ink-faded); border-radius: 2px;
     font-family: inherit; font-size: 0.9em;
   }
-  .md mark { background: rgba(179, 55, 43, 0.2); color: inherit; padding: 0 0.15em; }
+  .md mark { background: rgba(217, 114, 79, 0.28); color: inherit; padding: 0 0.15em; }
   .md summary { cursor: pointer; }
-  .md .toc { margin: 1rem 0; padding: 0.25rem 1rem; border-left: 3px solid var(--ribbon); }
+  .md .toc { margin: 1rem 0; padding: 0.25rem 1rem; border-left: 3px solid var(--accent); }
   .md .toc ul { margin: 0.25rem 0; padding-left: 1.25rem; }
   .md hr {
     height: 0; margin: 2rem 0; border: 0;
-    border-top: 1px solid rgba(109, 107, 104, 0.35);
+    border-top: 1px solid var(--rule);
   }
 """.replace("__NOISE__", NOISE)
 
@@ -225,7 +227,7 @@ PAGE = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
-<meta name="theme-color" content="#E7E4DC">
+<meta name="theme-color" content="#1D1A17">
 <link rel="icon" href="{favicon}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
