@@ -9,7 +9,7 @@ What it does:
   2. Renders every *.md file to a sibling *.md.html page; the raw .md file
      is left untouched.
   3. Writes an index.html directory listing into every directory. Markdown
-     files get a "(rendered)" link after their name, and a directory's
+     files link to the rendered page, with a "(raw)" link after the name, and a directory's
      README.md is rendered below its listing.
 
 All links are relative, so the site works at the domain root, under a
@@ -52,7 +52,7 @@ STYLE = """
     --paper-edge: #100E0C;   /* vignette at the page edges */
     --ink: #D6CEBD;          /* soft cream text */
     --ink-faded: #918878;    /* warm grey for secondary text */
-    --accent: #C9825F;       /* muted terracotta: links, hover, markers */
+    --accent: #D9724F;       /* muted terracotta: links, hover, markers */
     --rule: rgba(145, 136, 120, 0.35);
     --rule-soft: rgba(145, 136, 120, 0.22);
     --tint: rgba(255, 240, 215, 0.07);   /* inline code background */
@@ -165,12 +165,12 @@ STYLE = """
     color: var(--ink-faded);
     font-size: 0.9rem;
   }
-  table.files a.rendered {
+  table.files a.raw {
     margin: 0 0 0 0.5rem;
     color: var(--ink-faded);
     font-size: 0.85rem;
   }
-  table.files a.rendered:hover { color: var(--accent); }
+  table.files a.raw:hover { color: var(--accent); }
 
   table.files + .md { margin-top: 2rem; }
 
@@ -383,9 +383,14 @@ def build_listing(d: Path, root: Path) -> bool:
             '<td class="size"></td></tr>'
         )
     for p in files:
-        cell = f'<a href="{href(p.name)}">{html.escape(p.name)}</a>'
         if is_md(p.name) and (p.name + ".html") in names:
-            cell += f'<a class="rendered" href="{href(p.name)}.html">(rendered)</a>'
+            # markdown: the name opens the rendered page, "(raw)" opens the source
+            cell = (
+                f'<a href="{href(p.name)}.html">{html.escape(p.name)}</a>'
+                f'<a class="raw" href="{href(p.name)}">(raw)</a>'
+            )
+        else:
+            cell = f'<a href="{href(p.name)}">{html.escape(p.name)}</a>'
         rows.append(
             '<tr class="file">' + icon_cell("file")
             + f'<td class="name">{cell}</td>'
