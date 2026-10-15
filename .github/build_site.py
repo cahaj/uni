@@ -52,7 +52,7 @@ STYLE = """
     --paper-edge: #100E0C;   /* vignette at the page edges */
     --ink: #D6CEBD;          /* soft cream text */
     --ink-faded: #918878;    /* warm grey for secondary text */
-    --accent: #C9A05F;       /* links, hover, markers */
+    --accent: #C4856A;       /* soft clay: link underlines, hover, markers */
     --rule: rgba(145, 136, 120, 0.35);
     --rule-soft: rgba(145, 136, 120, 0.22);
     --tint: rgba(255, 240, 215, 0.07);   /* inline code background */
@@ -103,7 +103,7 @@ STYLE = """
   a:hover { color: var(--paper); background-color: var(--accent); text-decoration: none; }
   a:focus-visible { outline: 2px dashed var(--accent); outline-offset: 3px; }
 
-  /* ---- title: /current/path/ ---- */
+  /* ---- title: u.ř.xyz/current/path/ ---- */
   h1.site-title {
     margin: 0;
     text-align: left;
@@ -203,7 +203,7 @@ STYLE = """
   .md pre code { padding: 0; background: none; font-size: 0.9rem; }
   .md blockquote {
     margin-left: 0; padding: 0.1rem 1rem;
-    border-left: 3px solid var(--accent); color: var(--ink-faded);
+    border-left: 3px solid var(--ink-faded); color: var(--ink-faded);
   }
   .md table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
   .md th, .md td { padding: 0.4rem 0.75rem; border: 1px solid var(--rule); }
@@ -213,9 +213,9 @@ STYLE = """
     padding: 0.05em 0.4em; border: 1px solid var(--ink-faded); border-radius: 2px;
     font-family: inherit; font-size: 0.9em;
   }
-  .md mark { background: rgba(217, 114, 79, 0.28); color: inherit; padding: 0 0.15em; }
+  .md mark { background: rgba(196, 133, 106, 0.25); color: inherit; padding: 0 0.15em; }
   .md summary { cursor: pointer; }
-  .md .toc { margin: 1rem 0; padding: 0.25rem 1rem; border-left: 3px solid var(--accent); }
+  .md .toc { margin: 1rem 0; padding: 0.25rem 1rem; border-left: 3px solid var(--ink-faded); }
   .md .toc ul { margin: 0.25rem 0; padding-left: 1.25rem; }
   .md hr {
     height: 0; margin: 2rem 0; border: 0;
