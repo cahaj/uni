@@ -102,13 +102,11 @@ STYLE = """
   /* ---- title: i.ř.xyz/current/path/ ---- */
   h1.site-title {
     margin: 0;
-    text-align: center;
-    font-size: clamp(1.5rem, 6vw, 2.75rem);
+    text-align: left;
+    font-size: clamp(0.95rem, 3.4vw, 1.2rem);
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.5;
     overflow-wrap: anywhere;
-    filter: url(#rough);
-    text-shadow: 0 0 0.6px rgba(34, 35, 42, 0.55);
   }
   h1.site-title a { color: inherit; text-decoration: none; padding: 0; background: none; }
   h1.site-title a:hover { color: var(--ribbon); background: none; }
@@ -121,47 +119,39 @@ STYLE = """
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    gap: 0.75rem 1rem;
-    margin: 1rem 0 0;
-    font-size: 0.95rem;
+    justify-content: flex-start;
+    gap: 0.5rem 0.75rem;
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
     color: var(--ink-faded);
-    text-align: center;
   }
-  .meta-sep { color: var(--ink-faded); font-weight: bold; user-select: none; }
+  .meta-sep { color: var(--ink-faded); user-select: none; }
 
-  /* ---- double dashed ribbon divider ---- */
-  .ribbon-divider {
-    width: 100%;
-    margin: 1.75rem 0;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-  .ribbon-divider::before, .ribbon-divider::after {
-    content: "";
-    display: block;
-    width: 100%;
-    height: 2px;
-  }
-  .ribbon-divider::before {
-    background: repeating-linear-gradient(90deg,
-      var(--ink-faded) 0px, var(--ink-faded) 8px, transparent 8px, transparent 14px);
-  }
-  .ribbon-divider::after {
-    background: repeating-linear-gradient(90deg,
-      var(--ribbon) 0px, var(--ribbon) 8px, transparent 8px, transparent 14px);
-    background-position: 5px 0;
+  /* ---- plain thin rule ---- */
+  .rule {
+    height: 0;
+    margin: 1.25rem 0;
+    border: 0;
+    border-top: 1px solid rgba(109, 107, 104, 0.35);
   }
 
   /* ---- directory listing ---- */
   table.files { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
   table.files td {
-    padding: 0.45rem 0;
-    border-bottom: 1px dashed rgba(109, 107, 104, 0.45);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(109, 107, 104, 0.25);
     vertical-align: baseline;
   }
+  table.files td.icon { width: 1.75rem; color: var(--ink-faded); }
+  svg.ico {
+    width: 1.1em; height: 1.1em; vertical-align: -0.2em;
+    fill: none; stroke: currentColor; stroke-width: 1.6;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
   table.files td.name { overflow-wrap: anywhere; }
+  table.files tr.up td.name { color: var(--ink-faded); }
+  table.files a { color: inherit; text-decoration: none; padding: 0; }
+  table.files a:hover { color: var(--ribbon); background: none; }
   table.files td.size {
     text-align: right;
     white-space: nowrap;
@@ -169,16 +159,16 @@ STYLE = """
     color: var(--ink-faded);
     font-size: 0.9rem;
   }
-  table.files tr.dir a { font-weight: 700; }
-  table.files tr.up a { color: var(--ink-faded); }
-  table.files tr.up a:hover { color: var(--paper); }
   table.files a.rendered {
-    margin-left: 0.35rem;
+    margin-left: 0.5rem;
     color: var(--ink-faded);
     font-size: 0.85rem;
+    text-decoration: underline;
+    text-decoration-color: var(--ribbon);
     text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
   }
-  table.files a.rendered:hover { color: var(--paper); }
+  table.files a.rendered:hover { color: var(--ribbon); }
 
   .label {
     display: inline-block;
@@ -199,7 +189,7 @@ STYLE = """
     margin: 2rem 0 0.75rem; line-height: 1.3; font-weight: 700;
   }
   .md h1 { font-size: 1.9rem; }
-  .md h2 { font-size: 1.5rem; padding-bottom: 0.25rem; border-bottom: 1px dashed var(--ink-faded); }
+  .md h2 { font-size: 1.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid rgba(109, 107, 104, 0.35); }
   .md h3 { font-size: 1.25rem; }
   .md h4 { font-size: 1.1rem; }
   .md h5, .md h6 { font-size: 1rem; }
@@ -236,14 +226,8 @@ STYLE = """
   .md .toc { margin: 1rem 0; padding: 0.25rem 1rem; border-left: 3px solid var(--ribbon); }
   .md .toc ul { margin: 0.25rem 0; padding-left: 1.25rem; }
   .md hr {
-    border: 0; height: 7px; margin: 2rem 0;
-    background:
-      repeating-linear-gradient(90deg,
-        var(--ink-faded) 0px, var(--ink-faded) 8px, transparent 8px, transparent 14px)
-        0 0 / 100% 2px no-repeat,
-      repeating-linear-gradient(90deg,
-        var(--ribbon) 0px, var(--ribbon) 8px, transparent 8px, transparent 14px)
-        5px 5px / 100% 2px no-repeat;
+    height: 0; margin: 2rem 0; border: 0;
+    border-top: 1px solid rgba(109, 107, 104, 0.35);
   }
 
   @keyframes appear {
@@ -265,10 +249,9 @@ PAGE = """<!doctype html>
 <style>{style}</style></head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="4" result="noise"/>
-    <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.6" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
 </svg>
 <main>
 {body}
@@ -314,6 +297,10 @@ def page(title: str, body: str) -> str:
     )
 
 
+def icon_cell(name: str) -> str:
+    return f'<td class="icon"><svg class="ico" aria-hidden="true"><use href="#i-{name}"/></svg></td>'
+
+
 def title_text(dir_parts: tuple, filename: str = "") -> str:
     return SITE_HOST + "/" + "".join(p + "/" for p in dir_parts) + filename
 
@@ -337,7 +324,7 @@ def header(dir_parts: tuple, filename: str = "", nav: str = "") -> str:
     out = f'<h1 class="site-title">{"".join(parts)}</h1>\n'
     if nav:
         out += f'<p class="meta-inline">{nav}</p>\n'
-    out += '<div class="ribbon-divider" role="separator" aria-hidden="true"></div>\n'
+    out += '<div class="rule" role="separator" aria-hidden="true"></div>\n'
     return out
 
 
@@ -400,20 +387,22 @@ def build_listing(d: Path, root: Path) -> bool:
     rows = []
     if d != root:
         rows.append(
-            '<tr class="up"><td class="name"><a href="../">../</a></td>'
-            '<td class="size"></td></tr>'
+            '<tr class="up">' + icon_cell("up")
+            + '<td class="name"><a href="../">../</a></td><td class="size"></td></tr>'
         )
     for p in dirs:
         rows.append(
-            f'<tr class="dir"><td class="name"><a href="{href(p.name)}/">'
-            f'{html.escape(p.name)}/</a></td><td class="size"></td></tr>'
+            '<tr class="dir">' + icon_cell("folder")
+            + f'<td class="name"><a href="{href(p.name)}/">{html.escape(p.name)}/</a></td>'
+            '<td class="size"></td></tr>'
         )
     for p in files:
         cell = f'<a href="{href(p.name)}">{html.escape(p.name)}</a>'
         if is_md(p.name) and (p.name + ".html") in names:
             cell += f'<a class="rendered" href="{href(p.name)}.html">(rendered)</a>'
         rows.append(
-            f'<tr class="file"><td class="name">{cell}</td>'
+            '<tr class="file">' + icon_cell("file")
+            + f'<td class="name">{cell}</td>'
             f'<td class="size">{human_size(p.stat().st_size)}</td></tr>'
         )
 
@@ -424,7 +413,7 @@ def build_listing(d: Path, root: Path) -> bool:
     if readme is not None:
         text = readme.read_text(encoding="utf-8", errors="replace")
         body += (
-            '<div class="ribbon-divider" role="separator" aria-hidden="true"></div>\n'
+            '<div class="rule" role="separator" aria-hidden="true"></div>\n'
             f'<span class="label">{html.escape(readme.name)}</span>\n'
             f'<article class="md">{render_md(text)}</article>\n'
         )
