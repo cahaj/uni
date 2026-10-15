@@ -52,7 +52,7 @@ STYLE = """
     --paper-edge: #100E0C;   /* vignette at the page edges */
     --ink: #D6CEBD;          /* soft cream text */
     --ink-faded: #918878;    /* warm grey for secondary text */
-    --accent: #D9724F;       /* muted terracotta: links, hover, markers */
+    --accent: #C9825F;       /* muted terracotta: links, hover, markers */
     --rule: rgba(145, 136, 120, 0.35);
     --rule-soft: rgba(145, 136, 120, 0.22);
     --tint: rgba(255, 240, 215, 0.07);   /* inline code background */
