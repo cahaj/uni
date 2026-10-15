@@ -1,1 +1,1 @@
-This repository contains my uni-related stuff like projects, notes, etc. It has a directory browser hosted on github pages with a markdown renderer for .md files.
+This [repository](https://github.com/cahaj/uni/) contains my university-related stuff like projects and notes. It is currently being hosted on Github Pages as a directory browser with a markdown renderer using Github Actions. README.md files, like this one, are always rendered after the directory browser. Check my blog as well at [jiri.caha.cloud](https://jiri.caha.cloud/).
