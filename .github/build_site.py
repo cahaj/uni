@@ -12,6 +12,9 @@ What it does:
      files link to the rendered page, with a "(raw)" link after the name, and a directory's
      README.md is rendered below its listing.
 
+Directory listings also get keyboard navigation (see KEYNAV below): Up/Down
+select a row, Enter opens it, Escape clears the selection.
+
 All links are relative, so the site works at the domain root, under a
 project path (user.github.io/repo/) and on a custom domain.
 """
@@ -34,7 +37,7 @@ FAVICON = (
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E"
     "%3Crect width='100' height='100' rx='14' fill='%231D1A17'/%3E%3Ctext x='50' y='78' "
     "font-family='Courier New,Courier,monospace' font-weight='700' font-size='80' "
-    "text-anchor='middle' fill='%23D6CEBD'%3E%C5%98%3C/text%3E%3C/svg%3E"
+    "text-anchor='middle' fill='%23D6CEBD'%3EU%3C/text%3E%3C/svg%3E"
 )
 
 NOISE = (
@@ -56,6 +59,7 @@ STYLE = """
     --rule: rgba(145, 136, 120, 0.35);
     --rule-soft: rgba(145, 136, 120, 0.22);
     --tint: rgba(255, 240, 215, 0.07);   /* inline code background */
+    --sel: rgba(255, 240, 215, 0.08);    /* keyboard-selected row */
     --inset: rgba(0, 0, 0, 0.28);        /* code block background */
     --font: "Courier Prime", "Courier New", Courier, "Nimbus Mono PS", monospace;
   }
@@ -155,6 +159,14 @@ STYLE = """
     stroke-linecap: round; stroke-linejoin: round;
   }
   table.files td.name { overflow-wrap: anywhere; }
+  table.files tr { scroll-margin: 1rem 0; }
+  /* keyboard selection (Up/Down/Tab): the row is marked instead of a focus ring */
+  table.files a:focus-visible { outline: none; }
+  table.files tr.sel td { background: var(--sel); }
+  table.files tr.sel td:first-child { box-shadow: -0.5rem 0 0 var(--sel); }
+  table.files tr.sel td:last-child { box-shadow: 0.5rem 0 0 var(--sel); }
+  table.files tr.sel td.icon,
+  table.files tr.sel td.name a:first-child { color: var(--accent); }
   table.files tr.up td.name { color: var(--ink-faded); }
   table.files a { color: inherit; text-decoration: none; padding: 0; }
   table.files a:hover { color: var(--accent); background: none; }
@@ -223,6 +235,66 @@ STYLE = """
   }
 """.replace("__NOISE__", NOISE)
 
+# Keyboard navigation for directory listings.
+# The page behaves normally until Up or Down is pressed. That selects the first
+# row and from then on Up/Down move the selection (no wrap-around), Enter opens
+# the row's main link, and Escape clears the selection and gives the arrow keys
+# back to the browser. The selected row's link really has focus, so Enter, Tab,
+# Ctrl/Cmd+Enter (new tab) and screen readers all work natively; Tab-ing to a
+# link also marks its row. Keys pressed with Shift/Ctrl/Alt/Meta are ignored.
+KEYNAV = """<script>
+(function () {
+  var table = document.querySelector('table.files');
+  if (!table || !table.rows.length) return;
+  var rows = Array.prototype.slice.call(table.rows);
+  var cur = -1;
+
+  function mainLink(row) { return row.querySelector('td.name a'); }
+
+  function select(i, focus) {
+    if (cur >= 0) rows[cur].classList.remove('sel');
+    cur = i;
+    if (i < 0) return;
+    var row = rows[i];
+    row.classList.add('sel');
+    if (focus) {
+      var a = mainLink(row);
+      if (a) a.focus({ preventScroll: true });
+    }
+    if (i === 0) window.scrollTo(0, 0);
+    else row.scrollIntoView({ block: 'nearest' });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.defaultPrevented || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (cur < 0) { select(0, true); return; }
+      var next = cur + (e.key === 'ArrowDown' ? 1 : -1);
+      select(Math.max(0, Math.min(rows.length - 1, next)), true);
+    } else if (e.key === 'Escape' && cur >= 0) {
+      var active = document.activeElement;
+      if (active && table.contains(active)) active.blur();
+      select(-1);
+    } else if (e.key === 'Enter' && cur >= 0 && !(t.closest && t.closest('table.files a'))) {
+      var a = mainLink(rows[cur]);
+      if (a) { e.preventDefault(); a.click(); }
+    }
+  });
+
+  table.addEventListener('focusin', function (e) {
+    var i = rows.indexOf(e.target.closest('tr'));
+    if (i >= 0 && i !== cur && e.target.matches(':focus-visible')) select(i, false);
+  });
+  table.addEventListener('focusout', function (e) {
+    if (!e.relatedTarget || !table.contains(e.relatedTarget)) select(-1);
+  });
+})();
+</script>"""
+
 PAGE = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -242,7 +314,7 @@ PAGE = """<!doctype html>
 <main>
 {body}
 </main>
-</body></html>
+{script}</body></html>
 """
 
 
@@ -277,9 +349,9 @@ def human_size(n: int) -> str:
     return f"{n} B"
 
 
-def page(title: str, body: str) -> str:
+def page(title: str, body: str, script: str = "") -> str:
     return PAGE.format(
-        title=html.escape(title), favicon=FAVICON, style=STYLE, body=body
+        title=html.escape(title), favicon=FAVICON, style=STYLE, body=body, script=script
     )
 
 
@@ -405,7 +477,7 @@ def build_listing(d: Path, root: Path) -> bool:
         text = readme.read_text(encoding="utf-8", errors="replace")
         body += f'<article class="md">{render_md(text)}</article>\n'
 
-    index.write_text(page(title_text(parts), body), encoding="utf-8")
+    index.write_text(page(title_text(parts), body, KEYNAV), encoding="utf-8")
     return True
 
 
