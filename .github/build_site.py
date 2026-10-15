@@ -83,7 +83,6 @@ STYLE = """
   main {
     width: 100%;
     max-width: 760px;
-    animation: appear 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   /* ---- links ---- */
@@ -126,6 +125,7 @@ STYLE = """
     color: var(--ink-faded);
   }
   .meta-sep { color: var(--ink-faded); user-select: none; }
+  .meta-inline a { text-decoration: none; }
 
   /* ---- plain thin rule ---- */
   .rule {
@@ -150,8 +150,11 @@ STYLE = """
   }
   table.files td.name { overflow-wrap: anywhere; }
   table.files tr.up td.name { color: var(--ink-faded); }
-  table.files a { color: inherit; text-decoration: none; padding: 0; }
-  table.files a:hover { color: var(--ribbon); background: none; }
+  table.files a {
+    color: inherit; text-decoration: none;
+    padding: 0 0.15em; margin: 0 -0.15em; /* highlight padding without shifting the text */
+  }
+  table.files a:hover { color: var(--paper); background-color: var(--ribbon); }
   table.files td.size {
     text-align: right;
     white-space: nowrap;
@@ -160,27 +163,14 @@ STYLE = """
     font-size: 0.9rem;
   }
   table.files a.rendered {
-    margin-left: 0.5rem;
+    margin: 0 0 0 0.5rem;
+    padding: 0 0.15em;
     color: var(--ink-faded);
     font-size: 0.85rem;
-    text-decoration: underline;
-    text-decoration-color: var(--ribbon);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.25em;
   }
-  table.files a.rendered:hover { color: var(--ribbon); }
+  table.files a.rendered:hover { color: var(--paper); background-color: var(--ribbon); }
 
-  .label {
-    display: inline-block;
-    margin: 0 0 1.25rem;
-    padding: 0.15rem 0.5rem;
-    border: 1px solid var(--ink-faded);
-    border-radius: 2px;
-    color: var(--ink-faded);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-  }
+  table.files + .md { margin-top: 2rem; }
 
   /* ---- rendered markdown ---- */
   .md { font-size: 1.05rem; line-height: 1.75; overflow-wrap: break-word; }
@@ -229,12 +219,6 @@ STYLE = """
     height: 0; margin: 2rem 0; border: 0;
     border-top: 1px solid rgba(109, 107, 104, 0.35);
   }
-
-  @keyframes appear {
-    0%   { opacity: 0; transform: translateY(12px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-  @media (prefers-reduced-motion: reduce) { main { animation: none; } }
 """.replace("__NOISE__", NOISE)
 
 PAGE = """<!doctype html>
@@ -412,11 +396,7 @@ def build_listing(d: Path, root: Path) -> bool:
     readme = next((p for p in files if p.name.lower() == "readme.md"), None)
     if readme is not None:
         text = readme.read_text(encoding="utf-8", errors="replace")
-        body += (
-            '<div class="rule" role="separator" aria-hidden="true"></div>\n'
-            f'<span class="label">{html.escape(readme.name)}</span>\n'
-            f'<article class="md">{render_md(text)}</article>\n'
-        )
+        body += f'<article class="md">{render_md(text)}</article>\n'
 
     index.write_text(page(title_text(parts), body), encoding="utf-8")
     return True
