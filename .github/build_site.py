@@ -26,7 +26,7 @@ from urllib.parse import quote
 
 import markdown
 
-SITE_HOST = os.environ.get("SITE_HOST", "i.ř.xyz")
+SITE_HOST = os.environ.get("SITE_HOST", "u.ř.xyz")
 TOP_LEVEL_EXCLUDES = {".git", ".github", "_site"}
 MD_EXTENSIONS = ["fenced_code", "tables", "toc", "sane_lists"]
 
@@ -103,7 +103,7 @@ STYLE = """
   a:hover { color: var(--paper); background-color: var(--accent); text-decoration: none; }
   a:focus-visible { outline: 2px dashed var(--accent); outline-offset: 3px; }
 
-  /* ---- title: i.ř.xyz/current/path/ ---- */
+  /* ---- title: /current/path/ ---- */
   h1.site-title {
     margin: 0;
     text-align: left;
