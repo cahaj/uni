@@ -12,9 +12,8 @@ What it does:
      files link to the rendered page, with a "(raw)" link after the name, and a directory's
      README.md is rendered below its listing.
 
-Directory listings also get keyboard navigation (see KEYNAV below): Up/Down
-select a row, Left/Right switch between a markdown file's rendered and raw
-links, Enter opens, Escape clears the selection.
+Styles, scripts and the page template live in the site/ folder next to this
+file (style.css, site.js, template.html); see site.js for the keyboard controls.
 
 All links are relative, so the site works at the domain root, under a
 project path (user.github.io/repo/) and on a custom domain.
@@ -34,297 +33,29 @@ SITE_HOST = os.environ.get("SITE_HOST", "u.ř.xyz")
 TOP_LEVEL_EXCLUDES = {".git", ".github", "_site"}
 MD_EXTENSIONS = ["fenced_code", "tables", "toc", "sane_lists"]
 
-FAVICON = (
-    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E"
-    "%3Crect width='100' height='100' rx='14' fill='%231D1A17'/%3E%3Ctext x='50' y='78' "
-    "font-family='Courier New,Courier,monospace' font-weight='700' font-size='80' "
-    "text-anchor='middle' fill='%23D6CEBD'%3EU%3C/text%3E%3C/svg%3E"
-)
+SITE_DIR = Path(__file__).resolve().parent / "site"
 
-NOISE = (
-    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E"
-    "%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' "
-    "stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.80 0 0 0 0 0.70 "
-    "0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E"
-    "%3C/svg%3E"
-)
 
-STYLE = """
-  :root {
-    color-scheme: dark;
-    --paper: #1D1A17;        /* warm charcoal-brown page */
-    --paper-edge: #100E0C;   /* vignette at the page edges */
-    --ink: #D6CEBD;          /* soft cream text */
-    --ink-faded: #918878;    /* warm grey for secondary text */
-    --accent: #C4856A;       /* soft clay: link underlines, hover, markers */
-    --rule: rgba(145, 136, 120, 0.35);
-    --rule-soft: rgba(145, 136, 120, 0.22);
-    --tint: rgba(255, 240, 215, 0.07);   /* inline code background */
-    --sel: rgba(255, 240, 215, 0.08);    /* keyboard-selected row */
-    --inset: rgba(0, 0, 0, 0.28);        /* code block background */
-    --font: "Courier Prime", "Courier New", Courier, "Nimbus Mono PS", monospace;
-  }
+def _load(name: str) -> str:
+    path = SITE_DIR / name
+    if not path.is_file():
+        sys.exit(f"missing {path}: copy the whole .github/site folder")
+    return path.read_text(encoding="utf-8")
 
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body { min-height: 100dvh; margin: 0; }
-  html { scrollbar-color: #4A443B #1D1A17; }
 
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: var(--ink);
-    font-family: var(--font);
-    -webkit-font-smoothing: antialiased;
-    background-color: var(--paper);
-    background-image:
-      url("__NOISE__"),
-      radial-gradient(ellipse at 50% 45%, transparent 55%, var(--paper-edge) 130%);
-    background-attachment: fixed;
-    padding:
-      calc(2rem + env(safe-area-inset-top, 0px))
-      calc(1.5rem + env(safe-area-inset-right, 0px))
-      calc(2rem + env(safe-area-inset-bottom, 0px))
-      calc(1.5rem + env(safe-area-inset-left, 0px));
-  }
+# Page assets live next to this script in .github/site/:
+#   template.html  page skeleton with {{title}}, {{style}}, {{body}}, {{script}}
+#   style.css      all styles (colours are the variables in :root)
+#   site.js        keyboard navigation and collapsible headings
+TEMPLATE = _load("template.html")
+STYLE = _load("style.css")
+SCRIPT = _load("site.js")
 
-  ::selection { background: var(--accent); color: var(--paper); }
 
-  main {
-    width: 100%;
-    max-width: 760px;
-  }
-
-  /* ---- links ---- */
-  a {
-    color: var(--ink);
-    text-decoration: underline;
-    text-decoration-color: var(--accent);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.25em;
-    padding: 0 0.15em;
-    transition: color 0.15s ease, background-color 0.15s ease;
-  }
-  a:hover { color: var(--paper); background-color: var(--accent); text-decoration: none; }
-  a:focus-visible { outline: 2px dashed var(--accent); outline-offset: 3px; }
-
-  /* ---- title: u.ř.xyz/current/path/ ---- */
-  h1.site-title {
-    margin: 0;
-    text-align: left;
-    font-size: clamp(0.95rem, 3.4vw, 1.2rem);
-    font-weight: 700;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-  }
-  h1.site-title a { color: inherit; text-decoration: none; padding: 0; background: none; }
-  h1.site-title a:hover { color: var(--accent); background: none; }
-  h1.site-title .path,
-  h1.site-title .path a,
-  h1.site-title .slash { font-weight: 400; color: var(--ink-faded); }
-  h1.site-title .path a:hover { color: var(--accent); }
-
-  .meta-inline {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.5rem 0.75rem;
-    margin: 0.5rem 0 0;
-    font-size: 0.9rem;
-    color: var(--ink-faded);
-  }
-  .meta-sep { color: var(--ink-faded); user-select: none; }
-  .meta-inline a { text-decoration: none; padding: 0; }
-  .meta-inline a:hover { color: var(--accent); background: none; }
-
-  /* ---- plain thin rule ---- */
-  .rule {
-    height: 0;
-    margin: 1.25rem 0;
-    border: 0;
-    border-top: 1px solid var(--rule);
-  }
-
-  /* ---- directory listing ---- */
-  table.files { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
-  table.files td {
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--rule-soft);
-    vertical-align: baseline;
-  }
-  table.files td.icon { width: 1.75rem; color: var(--ink-faded); }
-  svg.ico {
-    width: 1.1em; height: 1.1em; vertical-align: -0.2em;
-    fill: none; stroke: currentColor; stroke-width: 1.6;
-    stroke-linecap: round; stroke-linejoin: round;
-  }
-  table.files td.name { overflow-wrap: anywhere; }
-  table.files tr { scroll-margin: 1rem 0; }
-  /* keyboard selection (Up/Down/Tab): the row is marked instead of a focus ring */
-  table.files a:focus-visible { outline: none; }
-  table.files tr.sel td { background: var(--sel); }
-  table.files tr.sel td:first-child { box-shadow: -0.5rem 0 0 var(--sel); }
-  table.files tr.sel td:last-child { box-shadow: 0.5rem 0 0 var(--sel); }
-  table.files tr.sel td.icon,
-  table.files tr.sel a:focus { color: var(--accent); }
-  table.files tr.up td.name { color: var(--ink-faded); }
-  table.files a { color: inherit; text-decoration: none; padding: 0; }
-  table.files a:hover { color: var(--accent); background: none; }
-  table.files td.size {
-    text-align: right;
-    white-space: nowrap;
-    padding-left: 1rem;
-    color: var(--ink-faded);
-    font-size: 0.9rem;
-  }
-  table.files a.raw {
-    margin: 0 0 0 0.5rem;
-    color: var(--ink-faded);
-    font-size: 0.85rem;
-  }
-  table.files a.raw:hover { color: var(--accent); }
-
-  table.files + .md { margin-top: 2rem; }
-
-  /* ---- rendered markdown ---- */
-  .md { font-size: 1.05rem; line-height: 1.75; overflow-wrap: break-word; }
-  .md > :first-child { margin-top: 0; }
-  .md h1, .md h2, .md h3, .md h4, .md h5, .md h6 {
-    margin: 2rem 0 0.75rem; line-height: 1.3; font-weight: 700;
-  }
-  .md h1 { font-size: 1.9rem; }
-  .md h2 { font-size: 1.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--rule); }
-  .md h3 { font-size: 1.25rem; }
-  .md h4 { font-size: 1.1rem; }
-  .md h5, .md h6 { font-size: 1rem; }
-  .md h6 { color: var(--ink-faded); }
-  .md p, .md ul, .md ol, .md pre, .md blockquote, .md table, .md details { margin: 0 0 1rem; }
-  .md ul, .md ol { padding-left: 1.75rem; }
-  .md li > ul, .md li > ol { margin: 0.25rem 0; }
-  .md li::marker { color: var(--accent); }
-  .md code {
-    font-family: inherit; font-size: 0.95em;
-    padding: 0.1em 0.3em; border-radius: 2px;
-    background: var(--tint);
-  }
-  .md pre {
-    padding: 0.9rem 1rem; overflow-x: auto; line-height: 1.5;
-    border: 1px solid var(--rule-soft); border-radius: 2px;
-    background: var(--inset);
-  }
-  .md pre code { padding: 0; background: none; font-size: 0.9rem; }
-  .md blockquote {
-    margin-left: 0; padding: 0.1rem 1rem;
-    border-left: 3px solid var(--ink-faded); color: var(--ink-faded);
-  }
-  .md table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
-  .md th, .md td { padding: 0.4rem 0.75rem; border: 1px solid var(--rule); }
-  .md th { text-align: left; border-bottom: 2px solid var(--ink); }
-  .md img { max-width: 100%; height: auto; }
-  .md kbd {
-    padding: 0.05em 0.4em; border: 1px solid var(--ink-faded); border-radius: 2px;
-    font-family: inherit; font-size: 0.9em;
-  }
-  .md mark { background: rgba(196, 133, 106, 0.25); color: inherit; padding: 0 0.15em; }
-  .md summary { cursor: pointer; }
-  .md .toc { margin: 1rem 0; padding: 0.25rem 1rem; border-left: 3px solid var(--ink-faded); }
-  .md .toc ul { margin: 0.25rem 0; padding-left: 1.25rem; }
-  .md hr {
-    height: 0; margin: 2rem 0; border: 0;
-    border-top: 1px solid var(--rule);
-  }
-""".replace("__NOISE__", NOISE)
-
-# Keyboard navigation for directory listings.
-# The page behaves normally until Up or Down is pressed. That selects the first
-# row and from then on Up/Down move the selection (no wrap-around), Enter opens
-# the row's main link, and Escape clears the selection and gives the arrow keys
-# back to the browser. On rows that have a "(raw)" link (markdown files), Right
-# moves the selection from the rendered page to the raw file and Left moves it
-# back; Up/Down always land on the main link of the next row. The selected row's link really has focus, so Enter, Tab,
-# Ctrl/Cmd+Enter (new tab) and screen readers all work natively; Tab-ing to a
-# link also marks its row. Keys pressed with Shift/Ctrl/Alt/Meta are ignored.
-KEYNAV = """<script>
-(function () {
-  var table = document.querySelector('table.files');
-  if (!table || !table.rows.length) return;
-  var rows = Array.prototype.slice.call(table.rows);
-  var cur = -1;
-
-  function mainLink(row) { return row.querySelector('td.name a'); }
-
-  function select(i, focus) {
-    if (cur >= 0) rows[cur].classList.remove('sel');
-    cur = i;
-    if (i < 0) return;
-    var row = rows[i];
-    row.classList.add('sel');
-    if (focus) {
-      var a = mainLink(row);
-      if (a) a.focus({ preventScroll: true });
-    }
-    if (i === 0) window.scrollTo(0, 0);
-    else row.scrollIntoView({ block: 'nearest' });
-  }
-
-  document.addEventListener('keydown', function (e) {
-    if (e.defaultPrevented || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
-    var t = e.target;
-    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
-
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (cur < 0) { select(0, true); return; }
-      var next = cur + (e.key === 'ArrowDown' ? 1 : -1);
-      select(Math.max(0, Math.min(rows.length - 1, next)), true);
-    } else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && cur >= 0) {
-      var raw = rows[cur].querySelector('td.name a.raw');
-      if (raw) {
-        e.preventDefault();
-        (e.key === 'ArrowRight' ? raw : mainLink(rows[cur])).focus({ preventScroll: true });
-      }
-    } else if (e.key === 'Escape' && cur >= 0) {
-      var active = document.activeElement;
-      if (active && table.contains(active)) active.blur();
-      select(-1);
-    } else if (e.key === 'Enter' && cur >= 0 && !(t.closest && t.closest('table.files a'))) {
-      var a = mainLink(rows[cur]);
-      if (a) { e.preventDefault(); a.click(); }
-    }
-  });
-
-  table.addEventListener('focusin', function (e) {
-    var i = rows.indexOf(e.target.closest('tr'));
-    if (i >= 0 && i !== cur && e.target.matches(':focus-visible')) select(i, false);
-  });
-  table.addEventListener('focusout', function (e) {
-    if (!e.relatedTarget || !table.contains(e.relatedTarget)) select(-1);
-  });
-})();
-</script>"""
-
-PAGE = """<!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>{title}</title>
-<meta name="theme-color" content="#1D1A17">
-<link rel="icon" href="{favicon}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<style>{style}</style></head>
-<body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
-  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
-  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
-</svg>
-<main>
-{body}
-</main>
-{script}</body></html>
-"""
+def fill(template: str, **values: str) -> str:
+    """Replace {{name}} placeholders in a single pass, so inserted content
+    (e.g. markdown that contains "{{style}}") is never substituted again."""
+    return re.sub(r"\{\{(\w+)\}\}", lambda m: values[m.group(1)], template)
 
 
 def is_md(name: str) -> bool:
@@ -358,9 +89,9 @@ def human_size(n: int) -> str:
     return f"{n} B"
 
 
-def page(title: str, body: str, script: str = "") -> str:
-    return PAGE.format(
-        title=html.escape(title), favicon=FAVICON, style=STYLE, body=body, script=script
+def page(title: str, body: str) -> str:
+    return fill(
+        TEMPLATE, title=html.escape(title), style=STYLE, script=SCRIPT, body=body
     )
 
 
@@ -413,8 +144,8 @@ def render_all_markdown(dest: Path) -> int:
         parts = md.parent.relative_to(dest).parts
         text = md.read_text(encoding="utf-8", errors="replace")
         nav = (
-            '<a href="./">&larr; Directory</a><span class="meta-sep">-</span>'
-            f'<a href="{href(md.name)}">raw</a>'
+            '<a class="nav-dir" href="./">&larr; Directory</a><span class="meta-sep">-</span>'
+            f'<a class="nav-raw" href="{href(md.name)}">raw</a>'
         )
         body = (
             header(parts, md.name, nav)
@@ -486,7 +217,7 @@ def build_listing(d: Path, root: Path) -> bool:
         text = readme.read_text(encoding="utf-8", errors="replace")
         body += f'<article class="md">{render_md(text)}</article>\n'
 
-    index.write_text(page(title_text(parts), body, KEYNAV), encoding="utf-8")
+    index.write_text(page(title_text(parts), body), encoding="utf-8")
     return True
 
 

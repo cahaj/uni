@@ -1,0 +1,199 @@
+/* Styles for every generated page. Colours are the variables in :root.
+   The paper grain is an inline SVG noise texture. */
+  :root {
+    color-scheme: dark;
+    --paper: #1D1A17;        /* warm charcoal-brown page */
+    --paper-edge: #100E0C;   /* vignette at the page edges */
+    --ink: #D6CEBD;          /* soft cream text */
+    --ink-faded: #918878;    /* warm grey for secondary text */
+    --accent: #C4856A;       /* soft clay: link underlines, hover, markers */
+    --rule: rgba(145, 136, 120, 0.35);
+    --rule-soft: rgba(145, 136, 120, 0.22);
+    --tint: rgba(255, 240, 215, 0.07);   /* inline code background */
+    --sel: rgba(255, 240, 215, 0.08);    /* keyboard-selected row */
+    --inset: rgba(0, 0, 0, 0.28);        /* code block background */
+    --font: "Courier Prime", "Courier New", Courier, "Nimbus Mono PS", monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { min-height: 100dvh; margin: 0; }
+  html { scrollbar-color: #4A443B #1D1A17; }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--ink);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--paper);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.80 0 0 0 0 0.70 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      radial-gradient(ellipse at 50% 45%, transparent 55%, var(--paper-edge) 130%);
+    background-attachment: fixed;
+    padding:
+      calc(2rem + env(safe-area-inset-top, 0px))
+      calc(1.5rem + env(safe-area-inset-right, 0px))
+      calc(2rem + env(safe-area-inset-bottom, 0px))
+      calc(1.5rem + env(safe-area-inset-left, 0px));
+  }
+
+  ::selection { background: var(--accent); color: var(--paper); }
+
+  main {
+    width: 100%;
+    max-width: 760px;
+  }
+
+  /* ---- links ---- */
+  a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
+    padding: 0 0.15em;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+  a:hover { color: var(--paper); background-color: var(--accent); text-decoration: none; }
+  a:focus-visible { outline: 2px dashed var(--accent); outline-offset: 3px; }
+
+  /* ---- title: u.ř.xyz/current/path/ ---- */
+  h1.site-title {
+    margin: 0;
+    text-align: left;
+    font-size: clamp(0.95rem, 3.4vw, 1.2rem);
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  h1.site-title a { color: inherit; text-decoration: none; padding: 0; background: none; }
+  h1.site-title a:hover { color: var(--accent); background: none; }
+  h1.site-title .path,
+  h1.site-title .path a,
+  h1.site-title .slash { font-weight: 400; color: var(--ink-faded); }
+  h1.site-title .path a:hover { color: var(--accent); }
+
+  .meta-inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem 0.75rem;
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    color: var(--ink-faded);
+  }
+  .meta-sep { color: var(--ink-faded); user-select: none; }
+  .meta-inline a { text-decoration: none; padding: 0; }
+  .meta-inline a:hover { color: var(--accent); background: none; }
+  .meta-inline a:focus-visible { color: var(--accent); outline: none; }
+
+  /* ---- plain thin rule ---- */
+  .rule {
+    height: 0;
+    margin: 1.25rem 0;
+    border: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ---- directory listing ---- */
+  table.files { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+  table.files td {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: baseline;
+  }
+  table.files td.icon { width: 1.75rem; color: var(--ink-faded); }
+  svg.ico {
+    width: 1.1em; height: 1.1em; vertical-align: -0.2em;
+    fill: none; stroke: currentColor; stroke-width: 1.6;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  table.files td.name { overflow-wrap: anywhere; }
+  table.files tr { scroll-margin: 1rem 0; }
+  /* keyboard selection (Up/Down/Tab): the row is marked instead of a focus ring */
+  table.files a:focus-visible { outline: none; }
+  table.files tr.sel td { background: var(--sel); }
+  table.files tr.sel td:first-child { box-shadow: -0.5rem 0 0 var(--sel); }
+  table.files tr.sel td:last-child { box-shadow: 0.5rem 0 0 var(--sel); }
+  table.files tr.sel td.icon,
+  table.files tr.sel a:focus { color: var(--accent); }
+  table.files tr.up td.name { color: var(--ink-faded); }
+  table.files a { color: inherit; text-decoration: none; padding: 0; }
+  table.files a:hover { color: var(--accent); background: none; }
+  table.files td.size {
+    text-align: right;
+    white-space: nowrap;
+    padding-left: 1rem;
+    color: var(--ink-faded);
+    font-size: 0.9rem;
+  }
+  table.files a.raw {
+    margin: 0 0 0 0.5rem;
+    color: var(--ink-faded);
+    font-size: 0.85rem;
+  }
+  table.files a.raw:hover { color: var(--accent); }
+
+  table.files + .md { margin-top: 2rem; }
+
+  /* ---- rendered markdown ---- */
+  .md { font-size: 1.05rem; line-height: 1.75; overflow-wrap: break-word; }
+  .md > :first-child { margin-top: 0; }
+  .md h1, .md h2, .md h3, .md h4, .md h5, .md h6 {
+    margin: 2rem 0 0.75rem; line-height: 1.3; font-weight: 700;
+  }
+  .md h1 { font-size: 1.9rem; }
+  .md h2 { font-size: 1.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--rule); }
+  .md h3 { font-size: 1.25rem; }
+  .md h4 { font-size: 1.1rem; }
+  .md h5, .md h6 { font-size: 1rem; }
+  .md h6 { color: var(--ink-faded); }
+  .md p, .md ul, .md ol, .md pre, .md blockquote, .md table, .md details { margin: 0 0 1rem; }
+  .md ul, .md ol { padding-left: 1.75rem; }
+  .md li > ul, .md li > ol { margin: 0.25rem 0; }
+  .md li::marker { color: var(--accent); }
+  .md code {
+    font-family: inherit; font-size: 0.95em;
+    padding: 0.1em 0.3em; border-radius: 2px;
+    background: var(--tint);
+  }
+  .md pre {
+    padding: 0.9rem 1rem; overflow-x: auto; line-height: 1.5;
+    border: 1px solid var(--rule-soft); border-radius: 2px;
+    background: var(--inset);
+  }
+  .md pre code { padding: 0; background: none; font-size: 0.9rem; }
+  .md blockquote {
+    margin-left: 0; padding: 0.1rem 1rem;
+    border-left: 3px solid var(--ink-faded); color: var(--ink-faded);
+  }
+  .md table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+  .md th, .md td { padding: 0.4rem 0.75rem; border: 1px solid var(--rule); }
+  .md th { text-align: left; border-bottom: 2px solid var(--ink-faded); }
+  .md img { max-width: 100%; height: auto; }
+  .md kbd {
+    padding: 0.05em 0.4em; border: 1px solid var(--ink-faded); border-radius: 2px;
+    font-family: inherit; font-size: 0.9em;
+  }
+  .md mark { background: rgba(196, 133, 106, 0.25); color: inherit; padding: 0 0.15em; }
+  .md summary { cursor: pointer; }
+  .md .toc { margin: 1rem 0; padding: 0.25rem 1rem; border-left: 3px solid var(--ink-faded); }
+  .md .toc ul { margin: 0.25rem 0; padding-left: 1.25rem; }
+  /* collapsible headings (the chevron button is added by site.js) */
+  .md [hidden] { display: none !important; }
+  .md .collapsible { cursor: pointer; }
+  .chev-btn {
+    display: inline-block; width: 1.4rem; margin: 0 0 0 -1.4rem; padding: 0;
+    border: 0; background: none; color: var(--ink-faded); cursor: pointer;
+    font: inherit; font-size: 1rem; line-height: 1; text-align: center; vertical-align: middle;
+  }
+  .chev-btn svg.ico { display: block; width: 1rem; height: 1rem; margin: 0 auto; }
+  .md .collapsible:not(.collapsed) .chev-btn svg { transform: rotate(90deg); }
+  .md .collapsible:hover .chev-btn, .chev-btn:hover { color: var(--accent); }
+  .chev-btn:focus-visible { outline: 2px dashed var(--accent); outline-offset: 2px; }
+  .md hr {
+    height: 0; margin: 2rem 0; border: 0;
+    border-top: 1px solid var(--rule);
+  }
