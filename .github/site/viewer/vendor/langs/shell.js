@@ -1,0 +1,1 @@
+(()=>{var l=(e,s)=>()=>(s||e((s={exports:{}}).exports,s),s.exports);var n=l((i,a)=>{function r(e){return{name:"Shell Session",aliases:["console"],contains:[{className:"meta",begin:/^\s{0,3}[/~\w\d[\]()@-]*[>%$#]/,starts:{end:/[^\\](?=\s*$)/,subLanguage:"bash"}}]}}a.exports=r});hljs.registerLanguage("shell",n());})();

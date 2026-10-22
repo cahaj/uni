@@ -1,0 +1,58 @@
+/* File viewer (pages written by viewer.py). Colours come from the :root variables. */
+
+.viewer-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.25rem 1.5rem;
+  margin-top: 1.25rem;
+  color: var(--ink-faded);
+  font-size: 0.9rem;
+}
+.viewer-bar + .rule { margin: 0.75rem 0 1rem; }
+.viewer-bar .tools { white-space: nowrap; }
+.viewer-bar .sep { margin: 0 0.4em; user-select: none; }
+.viewer-bar button {
+  padding: 0; border: 0; background: none;
+  color: inherit; font: inherit; cursor: pointer;
+}
+.viewer-bar button:hover,
+.viewer-bar button[aria-pressed="true"] { color: var(--accent); }
+.viewer-bar button:focus-visible { outline: 2px dashed var(--accent); outline-offset: 2px; }
+
+.v-status { margin: 1rem 0; color: var(--ink-faded); }
+
+/* ---- code: one flex row per line, line numbers from data-n so they cannot be copied ---- */
+.code { overflow-x: auto; font-size: 0.92rem; line-height: 1.6; tab-size: 4; -moz-tab-size: 4; }
+.code .rows { min-width: max-content; }
+.code.wrap .rows { min-width: 0; }
+.row { display: flex; }
+.ln {
+  flex: none; box-sizing: content-box;
+  width: calc(var(--digits, 3) * 1ch); padding: 0 1.1rem 0 0.4rem;
+  text-align: right; color: #7F776A; cursor: pointer; user-select: none;
+}
+.ln::before { content: attr(data-n); }
+.ln:hover { color: var(--accent); }
+.lc { flex: 1 1 auto; min-width: 0; white-space: pre; }
+.code.wrap .lc { white-space: pre-wrap; overflow-wrap: anywhere; }
+.row.hl { background: var(--sel); }
+.row.hl .ln { color: var(--accent); }
+/* very long files: let the browser skip layout of lines that are off screen */
+.code.big .row { content-visibility: auto; contain-intrinsic-size: auto 1.6em; }
+
+/* ---- syntax colours (highlight.js classes), kept warm and low in saturation ---- */
+.hljs-comment, .hljs-quote, .hljs-doctag { color: var(--ink-faded); font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-tag, .hljs-name { color: #C4856A; }
+.hljs-literal, .hljs-number, .hljs-symbol, .hljs-bullet { color: #D2A56F; }
+.hljs-string, .hljs-regexp, .hljs-meta-string, .hljs-addition { color: #A3AB78; }
+.hljs-title, .hljs-section { color: #E2CB95; }
+.hljs-section, .hljs-strong { font-weight: 700; }
+.hljs-built_in, .hljs-type, .hljs-attr, .hljs-attribute, .hljs-selector-class,
+.hljs-selector-id, .hljs-selector-attr, .hljs-selector-pseudo, .hljs-template-variable { color: #BBA27C; }
+.hljs-meta, .hljs-meta-keyword { color: #A79480; }
+.hljs-link { color: #C4856A; text-decoration: underline; }
+.hljs-emphasis { font-style: italic; }
+.hljs-addition { background: rgba(163, 171, 120, 0.10); }
+.hljs-deletion { color: #C98270; background: rgba(201, 130, 112, 0.12); }

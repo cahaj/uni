@@ -6,17 +6,26 @@ Usage: build_site.py SRC DEST
 What it does:
   1. Copies SRC to DEST (skipping .git, .github and DEST itself), so every
      file keeps its exact path: foo/bar/test.c -> DEST/foo/bar/test.c
-  2. Renders every *.md file to a sibling *.md.html page; the raw .md file
-     is left untouched.
-  3. Writes an index.html directory listing into every directory. Markdown
-     files link to the rendered page, with a "(raw)" link after the name, and a directory's
-     README.md is rendered below its listing.
+  2. Renders every *.md file to a sibling *.md.html page (markdown is
+     pre-generated here); the raw .md file is left untouched.
+  3. Gives every other text file a file-viewer page, foo/bar/test.c.html, via
+     viewer.py. Those pages only hold a shell; the file is loaded, decoded and
+     highlighted in the browser.
+  4. Writes an index.html directory listing into every directory. Markdown and
+     viewable files link to their page, with a "(raw)" link next to the name
+     (shown on the hovered or selected row); a directory's README.md is rendered
+     below its listing.
 
-Styles, scripts and the page template live in the site/ folder next to this
-file (style.css, site.js, template.html); see site.js for the keyboard controls.
+Files:
+  build_site.py    this script: copying, markdown, directory listings
+  common.py        shared page shell, title and helpers
+  viewer.py        the file viewer generator (language detection, shells)
+  site/            template.html, style.css, site.js, viewer/ (viewer.html/.css/.js
+                   and vendor/: the highlight.js files)
+  tools/           build_hljs.cjs, which regenerates site/viewer/vendor/
 
-All links are relative, so the site works at the domain root, under a
-project path (user.github.io/repo/) and on a custom domain.
+All links are relative, so the site works at the domain root, under a project
+path (user.github.io/repo/) and on a custom domain.
 """
 
 import html
@@ -25,46 +34,18 @@ import re
 import shutil
 import sys
 from pathlib import Path
-from urllib.parse import quote
 
 import markdown
 
-SITE_HOST = os.environ.get("SITE_HOST", "u.ř.xyz")
+import viewer
+from common import header, href, human_size, page, title_text
+
 TOP_LEVEL_EXCLUDES = {".git", ".github", "_site"}
 MD_EXTENSIONS = ["fenced_code", "tables", "toc", "sane_lists"]
-
-SITE_DIR = Path(__file__).resolve().parent / "site"
-
-
-def _load(name: str) -> str:
-    path = SITE_DIR / name
-    if not path.is_file():
-        sys.exit(f"missing {path}: copy the whole .github/site folder")
-    return path.read_text(encoding="utf-8")
-
-
-# Page assets live next to this script in .github/site/:
-#   template.html  page skeleton with {{title}}, {{style}}, {{body}}, {{script}}
-#   style.css      all styles (colours are the variables in :root)
-#   site.js        keyboard navigation and collapsible headings
-TEMPLATE = _load("template.html")
-STYLE = _load("style.css")
-SCRIPT = _load("site.js")
-
-
-def fill(template: str, **values: str) -> str:
-    """Replace {{name}} placeholders in a single pass, so inserted content
-    (e.g. markdown that contains "{{style}}") is never substituted again."""
-    return re.sub(r"\{\{(\w+)\}\}", lambda m: values[m.group(1)], template)
 
 
 def is_md(name: str) -> bool:
     return name.lower().endswith(".md")
-
-
-def href(name: str) -> str:
-    """URL-quote a single path segment for use in an href attribute."""
-    return quote(name)
 
 
 def render_md(text: str) -> str:
@@ -80,50 +61,8 @@ def render_md(text: str) -> str:
     return re.sub(r'href="([^"#?:]+\.md)([#?][^"]*)?"', fix, body, flags=re.IGNORECASE)
 
 
-def human_size(n: int) -> str:
-    size = float(n)
-    for unit in ("B", "KB", "MB", "GB"):
-        if size < 1024 or unit == "GB":
-            return f"{int(size)} {unit}" if unit == "B" else f"{size:.1f} {unit}"
-        size /= 1024
-    return f"{n} B"
-
-
-def page(title: str, body: str) -> str:
-    return fill(
-        TEMPLATE, title=html.escape(title), style=STYLE, script=SCRIPT, body=body
-    )
-
-
 def icon_cell(name: str) -> str:
     return f'<td class="icon"><svg class="ico" aria-hidden="true"><use href="#i-{name}"/></svg></td>'
-
-
-def title_text(dir_parts: tuple, filename: str = "") -> str:
-    return SITE_HOST + "/" + "".join(p + "/" for p in dir_parts) + filename
-
-
-def header(dir_parts: tuple, filename: str = "", nav: str = "") -> str:
-    """Site title (host + current path, each directory clickable) and divider."""
-    depth = len(dir_parts)
-    parts = [
-        f'<a class="host" href="{"../" * depth or "./"}">{html.escape(SITE_HOST)}</a>'
-        '<span class="path"><span class="slash">/</span>'
-    ]
-    for i, part in enumerate(dir_parts):
-        up = depth - i - 1
-        parts.append(
-            f'<a href="{"../" * up or "./"}">{html.escape(part)}</a>'
-            '<span class="slash">/</span>'
-        )
-    parts.append(html.escape(filename))
-    parts.append("</span>")
-
-    out = f'<h1 class="site-title">{"".join(parts)}</h1>\n'
-    if nav:
-        out += f'<p class="meta-inline">{nav}</p>\n'
-    out += '<div class="rule" role="separator" aria-hidden="true"></div>\n'
-    return out
 
 
 def copy_repo(src: Path, dest: Path) -> None:
@@ -138,45 +77,41 @@ def copy_repo(src: Path, dest: Path) -> None:
     (dest / ".nojekyll").touch()
 
 
-def render_all_markdown(dest: Path) -> int:
-    md_files = [p for p in dest.rglob("*") if p.is_file() and is_md(p.name)]
+def render_all_markdown(dest: Path, md_files: list) -> None:
     for md in md_files:
         parts = md.parent.relative_to(dest).parts
         text = md.read_text(encoding="utf-8", errors="replace")
-        nav = (
-            '<a class="nav-dir" href="./">&larr; Directory</a><span class="meta-sep">-</span>'
-            f'<a class="nav-raw" href="{href(md.name)}">raw</a>'
-        )
         body = (
-            header(parts, md.name, nav)
+            header(parts, md.name, raw_name=md.name)
             + f'<article class="md">{render_md(text)}</article>\n'
         )
         out = md.with_name(md.name + ".html")
         out.write_text(page(title_text(parts, md.name), body), encoding="utf-8")
-    return len(md_files)
 
 
-def build_listing(d: Path, root: Path) -> bool:
+def build_listing(d: Path, root: Path, viewable: set) -> bool:
+    """Write d/index.html. `viewable` holds the files that have a page next to
+    them (X.md.html, X.c.html, ...); those link to the page, the page itself is
+    hidden from the listing, and the raw file gets a "(raw)" link."""
     index = d / "index.html"
     if index.exists():
         # A real index.html from the repo: keep it, don't overwrite.
         print(f"note: keeping existing {index.relative_to(root)}", file=sys.stderr)
         return False
 
+    generated = {p.with_name(p.name + ".html") for p in viewable if p.parent == d}
     entries = list(d.iterdir())
-    names = {p.name for p in entries}
 
-    def is_generated(p: Path) -> bool:
-        # hide X.md.html when X.md exists next to it
-        return p.name.endswith(".md.html") and p.name[:-5] in names
-
-    dirs = sorted((p for p in entries if p.is_dir()), key=lambda p: p.name.lower())
+    dirs = sorted(
+        (p for p in entries if p.is_dir() and not (d == root and p.name == viewer.ASSET_DIR)),
+        key=lambda p: p.name.lower(),
+    )
     files = sorted(
         (
             p
             for p in entries
             if p.is_file()
-            and not is_generated(p)
+            and p not in generated
             and not (d == root and p.name == ".nojekyll")
         ),
         key=lambda p: p.name.lower(),
@@ -195,8 +130,8 @@ def build_listing(d: Path, root: Path) -> bool:
             '<td class="size"></td></tr>'
         )
     for p in files:
-        if is_md(p.name) and (p.name + ".html") in names:
-            # markdown: the name opens the rendered page, "(raw)" opens the source
+        if p in viewable:
+            # the name opens the rendered page / viewer, "(raw)" opens the file itself
             cell = (
                 f'<a href="{href(p.name)}.html">{html.escape(p.name)}</a>'
                 f'<a class="raw" href="{href(p.name)}">(raw)</a>'
@@ -228,12 +163,24 @@ def main() -> None:
     dest = Path(sys.argv[2]).resolve()
 
     copy_repo(src, dest)
-    n_md = render_all_markdown(dest)
 
-    directories = [Path(p) for p, _, _ in os.walk(dest)]
-    n_idx = sum(build_listing(d, dest) for d in directories)
+    # Snapshot the repository's own files first, so generated pages are never
+    # mistaken for them.
+    repo_files = [p for p in dest.rglob("*") if p.is_file() and p != dest / ".nojekyll"]
+    md_files = [p for p in repo_files if is_md(p.name)]
+    other_files = [p for p in repo_files if not is_md(p.name)]
 
-    print(f"Rendered {n_md} markdown file(s), generated {n_idx} directory listing(s) in {dest}")
+    render_all_markdown(dest, md_files)
+    viewable = set(md_files) | viewer.build(dest, other_files)
+
+    directories = [
+        Path(p)
+        for p, _, _ in os.walk(dest)
+        if Path(p) != dest / viewer.ASSET_DIR and (dest / viewer.ASSET_DIR) not in Path(p).parents
+    ]
+    n_idx = sum(build_listing(d, dest, viewable) for d in directories)
+
+    print(f"Rendered {len(md_files)} markdown file(s), generated {n_idx} directory listing(s) in {dest}")
 
 
 if __name__ == "__main__":

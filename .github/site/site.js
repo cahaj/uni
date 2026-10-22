@@ -3,7 +3,8 @@
 
    1. Directory listing: keyboard navigation.
    2. Rendered markdown (also a README under a listing): collapsible headings.
-   3. Rendered markdown page: keyboard access to the "Directory" and "raw" links.
+   3. Rendered markdown pages and file-viewer pages: keyboard access to the
+      "Directory" and "raw" links.
 
    Keys pressed together with Shift/Ctrl/Alt/Meta are always ignored, so browser
    shortcuts keep working. */
@@ -193,8 +194,9 @@
 
     document.addEventListener('keydown', function (e) {
       if (!plainKey(e) || typing(e.target)) return;
-      // leave horizontally scrollable code blocks and tables alone
-      if (e.target.closest && e.target.closest('pre, table')) return;
+      // leave code blocks, tables and the file viewer alone while they scroll sideways
+      var box = e.target.closest && e.target.closest('pre, table, .code');
+      if (box && box.scrollWidth > box.clientWidth) return;
 
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         e.preventDefault();

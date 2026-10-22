@@ -1,0 +1,1 @@
+(()=>{var g=(n,e)=>()=>(e||n((e={exports:{}}).exports,e),e.exports);var r=g((b,u)=>{function a(n){return{name:"ERB",subLanguage:"xml",contains:[n.COMMENT("<%#","%>"),{begin:"<%[%=-]?",end:"[%-]?%>",subLanguage:"ruby",excludeBegin:!0,excludeEnd:!0}]}}u.exports=a});hljs.registerLanguage("erb",r());})();
