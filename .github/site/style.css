@@ -129,20 +129,6 @@
     color: var(--ink-faded);
     font-size: 0.9rem;
   }
-  table.files a.raw {
-    margin: 0 0 0 0.5rem;
-    color: var(--ink-faded);
-    font-size: 0.85rem;
-  }
-  table.files a.raw:hover { color: var(--accent); }
-  /* "(raw)" shows only on the hovered or selected row; it stays focusable (and
-     is always shown on touch screens, which have no hover) */
-  table.files a.raw { opacity: 0; }
-  table.files tr:hover a.raw,
-  table.files tr.sel a.raw,
-  table.files a.raw:focus-visible { opacity: 1; }
-  @media (hover: none) { table.files a.raw { opacity: 1; } }
-
   table.files + .md { margin-top: 2rem; }
 
   /* ---- rendered markdown ---- */

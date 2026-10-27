@@ -36,12 +36,9 @@
      The page behaves normally until Up or Down is pressed. That selects the
      first row; from then on Up/Down move the selection (no wrap-around), Enter
      opens the row's main link and Escape clears the selection, handing the
-     arrow keys back to the browser. On rows with a "(raw)" link (markdown
-     files), Right moves the selection from the rendered page to the raw file
-     and Left moves it back; Up/Down always land on the next row's main link.
-     The selected row's link really has focus, so Enter, Tab, Ctrl/Cmd+Enter
-     (new tab) and screen readers work natively; Tab-ing to a link marks its
-     row too. */
+     arrow keys back to the browser. The selected row's link really has focus,
+     so Enter, Tab, Ctrl/Cmd+Enter (new tab) and screen readers work natively;
+     Tab-ing to a link marks its row too. */
   (function () {
     var table = document.querySelector('table.files');
     if (!table || !table.rows.length) return;
@@ -73,12 +70,6 @@
         if (cur < 0) { select(0, true); return; }
         var next = cur + (e.key === 'ArrowDown' ? 1 : -1);
         select(Math.max(0, Math.min(rows.length - 1, next)), true);
-      } else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && cur >= 0) {
-        var raw = rows[cur].querySelector('td.name a.raw');
-        if (raw) {
-          e.preventDefault();
-          (e.key === 'ArrowRight' ? raw : mainLink(rows[cur])).focus({ preventScroll: true });
-        }
       } else if (e.key === 'Escape' && cur >= 0) {
         var active = document.activeElement;
         if (active && table.contains(active)) active.blur();

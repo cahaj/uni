@@ -12,9 +12,9 @@ What it does:
      viewer.py. Those pages only hold a shell; the file is loaded, decoded and
      highlighted in the browser.
   4. Writes an index.html directory listing into every directory. Markdown and
-     viewable files link to their page, with a "(raw)" link next to the name
-     (shown on the hovered or selected row); a directory's README.md is rendered
-     below its listing.
+     viewable files link to their page (the raw file is reached from that page,
+     through its "raw" link); a directory's README.md is rendered below its
+     listing.
 
 Files:
   build_site.py    this script: copying, markdown, directory listings
@@ -23,6 +23,9 @@ Files:
   site/            template.html, style.css, site.js, viewer/ (viewer.html/.css/.js
                    and vendor/: the highlight.js files)
   tools/           build_hljs.cjs, which regenerates site/viewer/vendor/
+
+The page title shows SITE_HOST plus the current path, e.g. "u.ř.xyz/foo/bar/"; set
+the SITE_HOST environment variable to override the default (see common.py).
 
 All links are relative, so the site works at the domain root, under a project
 path (user.github.io/repo/) and on a custom domain.
@@ -91,8 +94,8 @@ def render_all_markdown(dest: Path, md_files: list) -> None:
 
 def build_listing(d: Path, root: Path, viewable: set) -> bool:
     """Write d/index.html. `viewable` holds the files that have a page next to
-    them (X.md.html, X.c.html, ...); those link to the page, the page itself is
-    hidden from the listing, and the raw file gets a "(raw)" link."""
+    them (X.md.html, X.c.html, ...); those link to the page, and the page itself
+    is hidden from the listing."""
     index = d / "index.html"
     if index.exists():
         # A real index.html from the repo: keep it, don't overwrite.
@@ -130,14 +133,9 @@ def build_listing(d: Path, root: Path, viewable: set) -> bool:
             '<td class="size"></td></tr>'
         )
     for p in files:
-        if p in viewable:
-            # the name opens the rendered page / viewer, "(raw)" opens the file itself
-            cell = (
-                f'<a href="{href(p.name)}.html">{html.escape(p.name)}</a>'
-                f'<a class="raw" href="{href(p.name)}">(raw)</a>'
-            )
-        else:
-            cell = f'<a href="{href(p.name)}">{html.escape(p.name)}</a>'
+        # the name opens the rendered page / viewer when there is one, else the file
+        target = href(p.name) + (".html" if p in viewable else "")
+        cell = f'<a href="{target}">{html.escape(p.name)}</a>'
         rows.append(
             '<tr class="file">' + icon_cell("file")
             + f'<td class="name">{cell}</td>'
