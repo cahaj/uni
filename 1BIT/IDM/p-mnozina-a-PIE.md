@@ -1,3 +1,5 @@
+Generated with Claude Sonnet 5.5
+
 # Potenční množina a princip inkluze a exkluze (PIE)
 
 Studijní materiál k sadě 04, příklady 1 až 11. Dirichletův princip (příklady 12 až 15) tu není.
