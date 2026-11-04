@@ -1,6 +1,6 @@
 Generated with Claude Sonnet 5.5
 
-# IZP – půlsemestrální zkouška: studijní taháček
+# IZP – půlsemestrální zkouška
 
 Půlsemestrálka obsahuje vždy čtyři typy úloh: oprava chybného kódu, doplnění kódu (ukazatele a struktury), soubory a argumenty programu a napsání celé funkce. Tahák shrnuje témata z přednášek 1–7, která k nim potřebuješ, a ukazuje, jak se v nich mohou proplétat.
 
