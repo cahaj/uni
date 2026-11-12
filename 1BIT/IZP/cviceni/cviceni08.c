@@ -53,9 +53,6 @@ void odeberPosledni(vektor *A)
         if (x != NULL) {
             (*A).pole = x;
             (*A).delka = delka - 1;
-        } else {
-            free((*A).pole);
-            (*A).pole = NULL;
         }
     } else if (delka == 1) {
         free((*A).pole);
