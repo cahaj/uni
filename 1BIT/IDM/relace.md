@@ -1,336 +1,314 @@
 Generated with Claude Sonnet 5.5
 
-# Logické zákony pro důkazy o množinách
+# Relace: vlastnosti, ekvivalence a uspořádání
 
-Značení: p, q, r jsou výroky (např. „x ∈ A“), ¬ je negace, ∧ konjunkce, ∨ disjunkce, ⇒ implikace, ⇔ ekvivalence.
+Studijní materiál k sadě úloh o relacích. Cíl: umět každou vlastnost **rozpoznat**, **dokázat** nebo **vyvrátit** a vědět, jak postupovat u typových zadání.
 
-## 1. Definice množinových operací (převod na logiku)
+## 1. Základní pojmy
 
-| Množinová operace | Logický zápis |
+**Relace R na množině M** je libovolná podmnožina kartézského součinu M × M. Zápis xRy znamená totéž co \[x, y\] ∈ R.
+
+Relaci lze zadat třemi způsoby a je dobré umět je mezi sebou převádět:
+
+- **výčtem dvojic**: R = {\[1,1\], \[1,2\], \[2,1\]},
+- **grafem se šipkami**: prvky jsou vrcholy, dvojice \[a, b\] je šipka a → b, dvojice \[a, a\] je smyčka,
+- **tabulkou**: řádek = první prvek, sloupec = druhý prvek, na průsečíku je 1 nebo 0.
+
+Pro úlohy je graf se šipkami nejpraktičtější, protože většinu vlastností z něj poznáš na první pohled.
+
+**Slovníček (česky / slovensky ve sbírce):** uspořádání / usporiadanie, rozklad / rozklad, uzávěr / uzáver, zachovává / zachováva, svaz (zväz), svazově uspořádaná množina / zväzovo usporiadaná množina, tranzitivní / tranzitívna, reflexivní / reflexívna.
+
+## 2. Pět základních vlastností
+
+| Vlastnost | Definice | Jak ji poznáš v grafu | Jak ji vyvrátíš (stačí jeden případ) |
+| --- | --- | --- | --- |
+| **Reflexivní** | ∀x ∈ M: xRx | smyčka u každého vrcholu | najdi a, pro které \[a,a\] ∉ R |
+| **Ireflexivní** | ∀x ∈ M: ¬(xRx) | žádná smyčka | najdi a, pro které \[a,a\] ∈ R |
+| **Symetrická** | xRy ⇒ yRx | každá šipka má šipku zpět | najdi \[a,b\] ∈ R, ale \[b,a\] ∉ R |
+| **Antisymetrická** | (xRy ∧ yRx) ⇒ x = y | mezi dvěma různými vrcholy nikdy šipky oběma směry | najdi a ≠ b s \[a,b\] ∈ R i \[b,a\] ∈ R |
+| **Tranzitivní** | (xRy ∧ yRz) ⇒ xRz | ke každé cestě a → b → c existuje zkratka a → c | najdi \[a,b\], \[b,c\] ∈ R, ale \[a,c\] ∉ R |
+
+### Pasti, které se opakují
+
+1. **Reflexivní a ireflexivní nejsou protiklady.** Relace může mít smyčky jen u části prvků, a pak není ani jedna. Příklad (úl. 4c): R = {\[1,1\]} na M = {1,2,3,4} není reflexivní (chybí \[2,2\]) a není ireflexivní (má \[1,1\]). Je přitom tranzitivní.
+2. **Symetrická a antisymetrická nejsou protiklady.** Identita {\[x,x\]} je obojí. Relace {\[1,2\],\[2,1\],\[1,3\]} není ani jedno: \[1,3\] nemá zpětnou šipku a dvojice 1, 2 jde oběma směry.
+3. **Implikace s nesplněným předpokladem platí automaticky.** Relace R = {\[1,2\]} je tranzitivní, protože neexistuje cesta o dvou šipkách, takže není co ověřovat. Stejně je tranzitivní prázdná relace. Proto R ∘ R = ∅ ≠ R (úl. 8, 9).
+4. **Tranzitivita zahrnuje i případ x = z.** Relace {\[1,2\],\[2,1\]} je symetrická, ale není tranzitivní: z 1R2 a 2R1 plyne 1R1, které chybí (úl. 6).
+5. **Antisymetrie neříká „šipky nejsou oboustranné“ obecně**, jen mezi *různými* prvky. Smyčky \[a,a\] antisymetrii nevadí.
+
+## 3. Jak vlastnosti ověřovat
+
+### 3.1 Konečná relace (výčet)
+
+- **Reflexivita:** projdi všechny prvky M a pro každý hledej \[a,a\]. Pozor na prvky, které se v R vůbec nevyskytují (například 4 v úl. 15).
+- **Symetrie:** pro každou dvojici \[a,b\] hledej \[b,a\].
+- **Antisymetrie:** hledej dvojici různých prvků a ≠ b, která jde oběma směry. Když žádná není, je relace antisymetrická.
+- **Tranzitivita:** pro každou dvojici \[a,b\] projdi všechny dvojice \[b,c\], které na ni navazují, a ověř, že \[a,c\] ∈ R. Dělej to systematicky podle prvního prvku, jinak snadno nějakou cestu přehlédneš.
+
+**Vzorový příklad (úl. 15).** M = {1,2,3,4}, R = {\[1,1\],\[1,2\],\[2,1\],\[2,2\],\[2,3\],\[3,2\],\[3,3\]}.
+
+- reflexivní? Ne, chybí \[4,4\].
+- symetrická? Ano: \[1,2\]↔\[2,1\], \[2,3\]↔\[3,2\], smyčky jsou samy sobě zpětné.
+- tranzitivní? Ne: 1R2 a 2R3, ale \[1,3\] ∉ R.
+- Závěr: **není ekvivalence**, a proto se hledají uzávěry (viz kapitola 4).
+
+### 3.2 Relace na nekonečné množině (podmínka)
+
+Tady nelze vypisovat. Platí pravidlo:
+
+- **Vlastnost dokazuješ obecně** pro libovolné prvky.
+- **Vlastnost vyvracíš jedním konkrétním protipříkladem.**
+
+**Šablona důkazu tranzitivity:** Nechť x, y, z jsou libovolné a platí xRy a yRz. Ukážeme, že platí xRz. (Rozepíšu definici relace, spojím obě podmínky a dostanu podmínku pro dvojici x, z.)
+
+**Vzorové příklady (úl. 16, relace na ℝ):**
+
+- **x/y = 1.** Reflexivita selže pro x = 0, protože výraz 0/0 není definovaný. Není to ekvivalence.
+- **|x − y| ≤ 1.** Reflexivní a symetrická ano, tranzitivní ne. Protipříklad: x = 0, y = 1, z = 2. Platí |0−1| ≤ 1 a |1−2| ≤ 1, ale |0−2| = 2 > 1. Není to ekvivalence.
+- **|x| = |y|.** Reflexivita: |x| = |x|. Symetrie: z |x| = |y| plyne |y| = |x|. Tranzitivita: z |x| = |y| a |y| = |z| plyne |x| = |z|. Je to ekvivalence, třídy jsou dvojice {x, −x}.
+- **x³ = y³.** Platí právě tehdy, když x = y (třetí mocnina je prostá). Relace je tedy identita, což je ekvivalence s jednoprvkovými třídami.
+
+**Úl. 17 (a \~ b ⇔ 10a + b je prvočíslo):** reflexivita selže u a = 0, protože 00 = 0 není prvočíslo. Symetrie také selže: 2 \~ 3 (číslo 23 je prvočíslo), ale 3 \~ 2 ne (32 je sudé). Není to ekvivalence.
+
+## 4. Uzávěry relace
+
+**Uzávěr** relace R vůči vlastnosti je *nejmenší* relace, která R obsahuje a danou vlastnost má. Nejmenší znamená: přidáš jen to, co je nutné.
+
+| Uzávěr | Konstrukce |
 | --- | --- |
-| x ∈ A ∩ B | x ∈ A ∧ x ∈ B |
-| x ∈ A ∪ B | x ∈ A ∨ x ∈ B |
-| x ∈ A \\ B | x ∈ A ∧ x ∉ B |
-| x ∈ A △ B | (x ∈ A ∧ x ∉ B) ∨ (x ∈ B ∧ x ∉ A), tedy „přesně jedno z nich“ (xor) |
-| (x, y) ∈ A × B | x ∈ A ∧ y ∈ B |
-| x ∉ A | ¬(x ∈ A) |
+| **Reflexivní** ρ(R) | R ∪ {\[x,x\] : x ∈ M} |
+| **Symetrický** | R ∪ R⁻¹ |
+| **Tranzitivní** R⁺ | R ∪ R² ∪ R³ ∪ … = všechny dvojice \[a,b\], pro které v grafu vede cesta z a do b o aspoň jedné šipce |
 
-Každý důkaz rovnosti množin se tak převede na ověření logické ekvivalence.
+Poznámky:
 
-## 2. Distributivní zákony
+- R⁺ = R právě tehdy, když je R tranzitivní. Proto S = {\[1,2\]} splňuje S⁺ = S (úl. 7) a S = {\[1,2\],\[2,1\]} splňuje S⁺ ≠ S (úl. 6), protože S⁺ přidá \[1,1\] a \[2,2\].
+- Dvojice \[x,x\] leží v R⁺ jen tehdy, když x leží na nějakém cyklu.
+- Ekvivalenční uzávěr získáš tak, že přidáš symetrii, pak tranzitivitu a nakonec smyčky.
 
-- p ∧ (q ∨ r) ⇔ (p ∧ q) ∨ (p ∧ r)
-- p ∨ (q ∧ r) ⇔ (p ∨ q) ∧ (p ∨ r)
+**Vzorový příklad (úl. 5).** R = {(1,3),(2,3),(3,4),(3,1),(4,2)}. V grafu vede cesta 1 → 3 → 4 → 2 → 3 → 1, takže se z každého z prvků 1, 2, 3, 4 dostaneš do každého (včetně sebe samého). Proto R⁺ = {1,2,3,4} × {1,2,3,4}, tedy všech 16 dvojic.
 
-Platí obě, zleva i zprava (vytýkání i roznásobení). Druhá je méně intuitivní, ale pro množiny je potřeba stejně často.
+**Pokračování úl. 15.** ρ(R) = R ∪ {\[4,4\]}. R⁺ = R ∪ {\[1,3\],\[3,1\]}, symetrický uzávěr je R samotná. Ekvivalenční uzávěr je R ∪ {\[4,4\],\[1,3\],\[3,1\]}, který určuje rozklad {{1,2,3},{4}}.
 
-## 3. De Morganovy zákony
+## 5. Ekvivalence a rozklady
 
-- ¬(p ∧ q) ⇔ ¬p ∨ ¬q
-- ¬(p ∨ q) ⇔ ¬p ∧ ¬q
+**Ekvivalence** je relace, která je **reflexivní, symetrická a tranzitivní.** Zapamatuj si zkratku **RST**.
 
-Nezbytné u rozdílů typu A \\ (B ∪ C) a A \\ (B ∩ C), protože x ∉ B ∪ C znamená ¬(x ∈ B ∨ x ∈ C).
+**Třída ekvivalence** prvku a je množina \[a\] = {x : xRa}, tedy všechno, co je „stejné jako a“.
 
-## 4. Komutativita, asociativita, idempotence
+**Rozklad** množiny M je systém podmnožin (bloků), které jsou neprázdné, po dvou disjunktní a jejich sjednocení je celé M.
 
-- p ∧ q ⇔ q ∧ p, p ∨ q ⇔ q ∨ p
-- (p ∧ q) ∧ r ⇔ p ∧ (q ∧ r), stejně pro ∨
-- p ∧ p ⇔ p, p ∨ p ⇔ p
+**Hlavní věta:** ekvivalence na M a rozklady M si jednoznačně odpovídají.
 
-Idempotence se hodí třeba při „zdvojení“ x ∉ C, jako v příkladu 2 (a), kde se x ∉ C objevovalo u obou částí: (p ∧ r) ∨ (q ∧ r).
+- Ekvivalence → rozklad: bloky jsou třídy ekvivalence.
+- Rozklad → ekvivalence: \[x,y\] ∈ E ⇔ x a y leží ve stejném bloku.
 
-## 5. Absorpce
+**Úl. 14b.** Rozklad {{a},{b,c},{d}} dává E = {\[a,a\],\[b,b\],\[c,c\],\[d,d\],\[b,c\],\[c,b\]}. Každý blok přispěje všemi dvojicemi svých prvků (včetně dvojic \[x,x\]).
 
-- p ∧ (p ∨ q) ⇔ p
-- p ∨ (p ∧ q) ⇔ p
+**Úl. 12 (všechny rozklady množiny {1,2,3,4}).** Systematicky podle tvaru bloků:
 
-To je přesně logické jádro příkladů 1 (a) a (b).
-
-## 6. Dvojitá negace a vlastnosti negace
-
-- ¬¬p ⇔ p
-- p ∧ ¬p ⇔ 0 (spor, nepravda), p ∨ ¬p ⇔ 1 (tautologie)
-- p ∧ 1 ⇔ p, p ∨ 0 ⇔ p, p ∧ 0 ⇔ 0, p ∨ 1 ⇔ 1
-
-Důležité pro hledání, že množina vychází prázdná (např. 1 (g): x ∈ A \\ B a x ∈ B \\ A vede na x ∉ B ∧ x ∈ B, spor).
-
-## 7. Implikace a ekvivalence
-
-- p ⇒ q ⇔ ¬p ∨ q (převod implikace na disjunkci)
-- p ⇒ q ⇔ ¬q ⇒ ¬p (obměna, kontrapozice)
-- ¬(p ⇒ q) ⇔ p ∧ ¬q
-- p ⇔ q ⇔ (p ⇒ q) ∧ (q ⇒ p)
-
-Poslední je přesně to, proč rovnost množin dokazujeme dvěma inkluzemi.
-
-## 8. Zjednodušení a zavedení (pravidla pro jednosměrné kroky)
-
-- p ∧ q ⇒ p (zjednodušení konjunkce)
-- p ⇒ p ∨ q (zavedení disjunkce)
-- z p a q plyne p ∧ q (zavedení konjunkce)
-- z p a p ⇒ q plyne q (modus ponens)
-- z p ∨ q a ¬p plyne q (disjunktivní sylogismus)
-
-## 9. Rozbor případů jako implikace
-
-Pravidlo „z (p ∨ q), (p ⇒ s) a (q ⇒ s) plyne s“ lze psát čistě formulí:
-
-((p ⇒ s) ∧ (q ⇒ s)) ⇔ ((p ∨ q) ⇒ s)
-
-Tím se rozbor případů nahradí jednou implikací.
-
-## 10. Kvantifikátory (pro obecné postupy)
-
-- X ⊆ Y ⇔ ∀x: (x ∈ X ⇒ x ∈ Y)
-- X = Y ⇔ ∀x: (x ∈ X ⇔ x ∈ Y)
-- ¬∀x φ ⇔ ∃x ¬φ (užitečné pro protipříklady: stačí najít jeden prvek, který rovnost porušuje)
-
-## 11. Pro kartézské součiny
-
-Pro dvojici (x, y) rozepisuj složky zvlášť:
-
-(x, y) ∈ A × (B ∪ C) ⇔ x ∈ A ∧ (y ∈ B ∨ y ∈ C) ⇔ (x ∈ A ∧ y ∈ B) ∨ (x ∈ A ∧ y ∈ C)
-
-To je distributivita ∧ vůči ∨, použitá na složky.
-
-## Praktický postup
-
-1. Zvolit libovolné x (u součinů dvojici (x, y)).
-2. Převést množinovou notaci na logickou (tabulka 1).
-3. Upravit levou stranu pomocí zákonů (distributivita, De Morgan, absorpce…).
-4. Dojít k pravé straně a převést zpět na množiny.
-5. Pokud rovnost neplatí, najít konkrétní prvek, který splňuje jednu stranu a druhou ne (protipříklad), nebo ukázat, že se logické formule liší pro nějaké ohodnocení p, q, r.
-
-**Tip:** pro rychlou kontrolu, zda rovnost platí, sestav **pravdivostní tabulku** pro p = „x ∈ A“, q = „x ∈ B“, r = „x ∈ C“. Pokud mají obě strany pro všech 8 ohodnocení stejnou hodnotu, rovnost platí.
-
-## 12. Pravidla pro práci s kvantifikátory (rozšíření kapitoly 10)
-
-U důkazů o relacích se místo množinových operací objevují hlavně kvantifikátory: definice složení obsahuje „existuje y“, definice vlastností obsahuje „pro všechna x, y, z“. Tato kapitola navazuje na kapitolu 10 a rozvádí ji.
-
-### 12.1 Základní pojmy
-
-- **∀x φ(x)**: pro každé x platí φ(x).
-- **∃x φ(x)**: existuje aspoň jedno x, pro které platí φ(x).
-- **∃!x φ(x)**: existuje právě jedno takové x (používá se u zobrazení).
-- Proměnná za kvantifikátorem je **vázaná**, lze ji přejmenovat: ∃y φ(y) ⇔ ∃t φ(t). Tohle se hodí, když se v jednom důkazu objeví dvě různá „y“.
-- Kvantifikátor se vždy vztahuje na **celou formuli za ním**. Zápis ∀x (p ⇒ q) není totéž co (∀x p) ⇒ q.
-
-### 12.2 Negace kvantifikátorů
-
-| Negace | Převod |
+| Tvar bloků | Počet rozkladů |
 | --- | --- |
-| ¬∀x φ | ∃x ¬φ |
-| ¬∃x φ | ∀x ¬φ |
-| ¬∀x ∃y φ | ∃x ∀y ¬φ (každý kvantifikátor se otočí, negace se přesune dovnitř) |
-| ¬∀x (p ⇒ q) | ∃x (p ∧ ¬q) (kombinace s pravidlem ¬(p ⇒ q) ⇔ p ∧ ¬q z kapitoly 7) |
+| jeden blok 4 | 1 |
+| bloky 3 + 1 | 4 |
+| bloky 2 + 2 | 3 |
+| bloky 2 + 1 + 1 | 6 |
+| bloky 1 + 1 + 1 + 1 | 1 |
+| **celkem** | **15** |
 
-**Použití u vlastností relací (negace = protipříklad):**
+**Úl. 13 (rozklady ℤ).** Nejznámější je rozklad podle zbytku po dělení n: pro n = 3 jsou bloky {3m}, {3m+1}, {3m+2}. Další: nula, kladná a záporná čísla.
 
-- R není reflexivní: ∃x: ¬(xRx), tedy chybí smyčka.
-- R není symetrická: ∃x, y: xRy ∧ ¬(yRx).
-- R není antisymetrická: ∃x, y: xRy ∧ yRx ∧ x ≠ y.
-- R není tranzitivní: ∃x, y, z: xRy ∧ yRz ∧ ¬(xRz).
-- Rovnost X = Y neplatí: ∃x: ¬(x ∈ X ⇔ x ∈ Y), tedy existuje prvek, který leží v jedné množině a ve druhé ne.
+**Úl. 19 (E⁻¹ je ekvivalence).** Reflexivita: \[x,x\] ∈ E, tedy \[x,x\] ∈ E⁻¹. Symetrie: \[x,y\] ∈ E⁻¹ ⇒ \[y,x\] ∈ E ⇒ \[x,y\] ∈ E ⇒ \[y,x\] ∈ E⁻¹. Tranzitivita se ověří stejně, nebo stačí říct, že pro symetrickou E je E⁻¹ = E.
 
-### 12.3 Rozdělení kvantifikátorů přes spojky
+**Úl. 20 (E₁ ∘ E₂ nemusí být ekvivalence).** Protipříklad na X = {1,2,3}: E₁ má rozklad {{1,2},{3}}, E₂ má rozklad {{1},{2,3}}. Složením dostaneš E₁ ∘ E₂ = {\[1,1\],\[1,2\],\[2,1\],\[2,2\],\[2,3\],\[3,1\],\[3,2\],\[3,3\]}. Obsahuje \[3,1\], ale neobsahuje \[1,3\], takže symetrie selhala.
 
-| Pravidlo | Platí? |
+## 6. Uspořádání
+
+**Uspořádání** (neostré, částečné) je relace, která je **reflexivní, antisymetrická a tranzitivní.** Zkratka **RAT**.
+
+Porovnání s ekvivalencí: obě mají R a T, ale ekvivalence má symetrii a uspořádání antisymetrii. Relace, která je zároveň symetrická i antisymetrická, je podmnožinou identity.
+
+| Pojem | Význam |
 | --- | --- |
-| ∀x (φ ∧ ψ) ⇔ ∀x φ ∧ ∀x ψ | ano, oběma směry |
-| ∃x (φ ∨ ψ) ⇔ ∃x φ ∨ ∃x ψ | ano, oběma směry (použito v úloze 10 a) |
-| ∃x (φ ∧ ψ) ⇒ ∃x φ ∧ ∃x ψ | jen jedním směrem |
-| ∀x φ ∨ ∀x ψ ⇒ ∀x (φ ∨ ψ) | jen jedním směrem |
+| **Ostré uspořádání** | ireflexivní a tranzitivní (například < na ℕ) |
+| **Lineární (úplné) uspořádání** | uspořádání, ve kterém jsou každé dva prvky srovnatelné (xRy nebo yRx) |
+| **Částečné uspořádání** | srovnatelné být nemusí, například ⊆ na P(X) pro |
 
-Proč opačné směry selhávají: pravá strana „∃x φ ∧ ∃x ψ“ dovoluje, aby každá z formulí byla splněna jiným x, zatímco levá strana „∃x (φ ∧ ψ)“ chce jedno x pro obě. Podobně u ∀ a ∨.
+**Příklady uspořádání:** ≤ na ℝ (lineární), ⊆ na P(X) (částečné), dělitelnost ∣ na ℕ (částečná).
 
-- Protipříklad k ∃ a ∧: na ℤ je ∃x (x je sudé ∧ x je liché) nepravdivé, ale ∃x (x je sudé) ∧ ∃x (x je liché) pravdivé.
-- Protipříklad k ∀ a ∨: na ℤ platí ∀x (x je sudé ∨ x je liché), ale neplatí ∀x (x je sudé) ani ∀x (x je liché).
+**Úl. 18.** Relace A ∼ B ⇔ A ⊆ B na P(X) je reflexivní (A ⊆ A), antisymetrická (A ⊆ B a B ⊆ A dávají A = B) a tranzitivní. Není symetrická: ∅ ⊆ X, ale X ⊄ ∅. Je tedy uspořádání, ne ekvivalence.
 
-**Tohle je přesně důvod, proč je v úloze 11 u průniku jen inkluze „⊆“.** Průnik odpovídá ∧, a ∃ se přes ∧ nerozdělí oběma směry.
+**Úl. 22.** P(Y) \\ P(X) pro X = {1,2,3}, Y = {1,2,3,4} jsou právě podmnožiny Y obsahující prvek 4. Zúžení uspořádání na libovolnou podmnožinu je opět uspořádání (vlastnosti RAT se zúžením neztratí), takže stačí to takto zdůvodnit.
 
-### 12.4 Vytknutí části, která na x nezávisí
+**Úl. 21 (R₁ ∘ R₂ nemusí být uspořádání).** Protipříklad na X = {1,2}: R₂ = {\[1,1\],\[2,2\],\[1,2\]} a R₁ = {\[1,1\],\[2,2\],\[2,1\]} jsou uspořádání. Složením vyjde R₁ ∘ R₂ = {\[1,1\],\[1,2\],\[2,1\],\[2,2\]}, které není antisymetrické.
 
-Pokud formule ψ **neobsahuje proměnnou x**, platí:
+### Hasseův diagram
 
-- ∃x (φ(x) ∧ ψ) ⇔ (∃x φ(x)) ∧ ψ
-- ∃x (φ(x) ∨ ψ) ⇔ (∃x φ(x)) ∨ ψ
-- ∀x (φ(x) ∧ ψ) ⇔ (∀x φ(x)) ∧ ψ
-- ∀x (φ(x) ∨ ψ) ⇔ (∀x φ(x)) ∨ ψ
+Hasseův diagram je zjednodušený graf uspořádání. Postup:
 
-Pozor: v definici složení \[x,y\] ∈ S ∧ \[y,z\] ∈ R obsahují **oba** členy proměnnou y, takže vytknout nelze. Naopak \[y,z\] ∈ R spolu s ∃x by vytknout šlo.
+1. Vynech všechny smyčky (reflexivita se předpokládá).
+2. Vynech všechny šipky, které vyplývají z tranzitivity (zkratky a → c, pokud existuje cesta a → b → c).
+3. Nakresli menší prvky dolů, větší nahoru, a vynech šipky (směr je dán polohou).
 
-### 12.5 Pořadí kvantifikátorů
+Na diagramu čteš: a ≤ b právě tehdy, když se z a dostaneš do b cestou směrem nahoru.
 
-- Stejné kvantifikátory lze zaměnit: ∀x ∀y φ ⇔ ∀y ∀x φ a ∃x ∃y φ ⇔ ∃y ∃x φ. (Použito v 10 e, kde se zaměňuje ∃y a ∃i.)
-- Různé kvantifikátory **nelze** zaměnit: ∃y ∀x φ ⇒ ∀x ∃y φ platí jen jedním směrem.
-- Příklad na ℕ: ∀x ∃y (y > x) je pravda (ke každému čísle existuje větší), ale ∃y ∀x (y > x) je nepravda (neexistuje číslo větší než všechna).
+## 7. Svazově uspořádaná množina (úl. 23–26)
 
-### 12.6 Prázdné případy
+V uspořádané množině (M, ≤) pro dva prvky a, b platí:
 
-- ∀x ∈ ∅ φ(x) je **vždy pravdivé** (není co porušit).
-- ∃x ∈ ∅ φ(x) je **vždy nepravdivé** (není co vybrat).
-- Proto je prázdná relace symetrická, antisymetrická, tranzitivní i ireflexivní, a relace {\[1,2\]} je tranzitivní (neexistuje navazující dvojice, takže není co ověřovat).
+- **horní závora** je prvek, který je ≥ a i ≥ b,
+- **supremum** a ∨ b je nejmenší z horních závor (musí existovat a být jediné),
+- **dolní závora** je prvek ≤ a i ≤ b,
+- **infimum** a ∧ b je největší z dolních závor.
 
-### 12.7 Pravidla pro vedení důkazu
+**Svazově uspořádaná množina** je uspořádaná množina, v níž mají **každé dva prvky supremum i infimum.**
 
-| Cíl nebo situace | Co udělat |
+### Jak postupovat u úlohy 23
+
+1. **Dostaň R\*ᵢ.** Je to nejmenší reflexivní a tranzitivní relace obsahující Rᵢ, tedy: přidej smyčky a přidej všechny dvojice \[a,b\], kam vede cesta. Pro svaz stačí pracovat s grafem Rᵢ a „dosažitelností“, vypisovat všechny dvojice není nutné.
+2. **Rychlý test (nutná podmínka):** konečný svaz má právě jeden největší a právě jeden nejmenší prvek. Pokud existují dva maximální prvky (prvky bez šipky ven) nebo dva minimální prvky (bez šipky dovnitř), svaz to není.
+3. **Důkladný test:** u každé dvojice prvků najdi horní závory a zkontroluj, že mezi nimi je nejmenší. Totéž s dolními závorami. Zaměř se na dvojice nesrovnatelných prvků.
+
+**Proč nestačí rychlý test:** R₆ má jeden nejmenší (a) i jeden největší (f) prvek, přesto svaz není. Prvky d a e mají dolní závory a, b, c, ale b a c jsou nesrovnatelné, takže mezi dolními závorami není největší a infimum neexistuje.
+
+**Výsledky úlohy 23 s důvodem:**
+
+- R₁, R₂, R₃, R₄, R₇ jsou svazy. Jsou to „rovnoběžné cesty“ s jedním začátkem a jedním koncem a nesrovnatelné prvky mají vždy společný nejbližší prvek nad sebou i pod sebou.
+- R₅ svaz není: prvek c nemá žádný následník, takže c a f jsou dva maximální prvky a nemají společnou horní závoru.
+- R₆ svaz není, viz výše.
+
+### Dělitelnost (úl. 24, 25)
+
+Relace m ∣ n znamená, že m dělí n. Na množině přirozených čísel platí: supremum dvou čísel je jejich **nejmenší společný násobek** a infimum je jejich **největší společný dělitel.** Množina X s dělitelností je tedy svaz, právě když pro každou dvojici z X leží její NSN i NSD zpět v X.
+
+**Úl. 24.** X = {1,2,3,4,6,12}. Hasseův diagram: dole 1; nad ním 2 a 3; nad 2 je 4 a 6, nad 3 je 6; úplně nahoře 12 (nad 4 a 6). Nesrovnatelné dvojice mají NSN i NSD v X, například pro 4 a 6 je NSN = 12 a NSD = 2. Je to svaz.
+
+**Úl. 25.** Hledáš a, b, c tak, aby M = {a, b, c, 2, 4, 8} byl svaz. Nejjednodušší cesta je zvolit řetěz (každé dva prvky jsou srovnatelné, tedy supremum a infimum jsou vždy jeden z nich). Například a, b, c = 1, 16, 32, nebo 1, 16, 64. Jiná volba často vyžaduje, aby se do M „vešly“ i další NSN a NSD (například přidání čísla 3 by vyžadovalo i 6 a 12).
+
+**Úl. 26.** (P(M), ⊆) je svaz: supremum dvou množin je jejich sjednocení, infimum je průnik. Hasseův diagram pro 4prvkovou množinu má 16 vrcholů v 5 patrech (1, 4, 6, 4, 1 prvků) a hrany spojují množiny lišící se právě jedním prvkem.
+
+## 8. Postup podle typu zadání
+
+| Zadání | Postup |
 | --- | --- |
-| **Dokázat ∀x φ(x)** | Napsat „Nechť x je libovolné.“ Dokázat φ(x) bez dalších předpokladů o x. Žádná konkrétní hodnota. |
-| **Dokázat ∃x φ(x)** | Najít konkrétního svědka a ověřit, že pro něj φ platí. (U složení: svědek je prostřední prvek y.) |
-| **Použít předpoklad ∀x φ(x)** | Dosadit do něj libovolný konkrétní prvek, který potřebuješ (instanciace). |
-| **Použít předpoklad ∃y φ(y)** | Napsat „Nechť y je takový prvek.“ Je pevné, ale neznámé. Nesmí mít jméno, které už v důkazu jinak existuje. |
-| **Vyvrátit ∀x φ(x)** | Najít jeden protipříklad (viz negace v 12.2). |
-| **Vyvrátit ∃x φ(x)** | Dokázat ∀x ¬φ(x). |
-| **Z φ(a) odvodit ∃x φ(x)** | Zavedení ∃: konkrétní prvek a je svědkem. |
-| **Dokázat ∀x (p ⇒ q)** | Zvolit libovolné x, **předpokládat p**, odvodit q. |
+| „Určete vlastnosti relace“ | Projdi všech pět vlastností. Každou buď dokaž obecně, nebo vyvrať jedním protipříkladem. |
+| „Je to ekvivalence?“ | Ověř RST. Při první nesplněné vlastnosti skonči (jeden protipříklad stačí). Pokud je ekvivalence, najdi třídy a zapiš rozklad. |
+| „Je to uspořádání?“ | Ověř RAT. U svazů pak hledej supremum a infimum každé dvojice. |
+| „Najděte relaci, která je … ale není …“ | Začni nejmenší vhodnou relací a přidávej dvojice. Po každém přidání zkontroluj tranzitivitu. |
+| „Určete uzávěr“ | Přidej jen to, co je nutné. Pro R⁺ prověř všechny cesty v grafu. |
+| „Rozklad ↔ ekvivalence“ | Každý blok dá všechny dvojice svých prvků (včetně \[x,x\]). |
 
-## 13. Definice pro důkazy z 5. sady
+### Recepty pro úlohu 4 (M = {1,2,3,4})
 
-Všechny důkazy z úloh 10 a 11 se dělají tak, že se definice rozepíše do logiky (jako v kapitole 1) a pak se použijí zákony z kapitol 2 až 12. Proto je potřeba znát přesné znění definic.
+- **Symetrická, reflexivní, není tranzitivní:** identita plus {\[1,2\],\[2,1\],\[1,3\],\[3,1\]}. Chybí \[2,3\] i \[3,2\], tedy tranzitivita selže.
+- **Reflexivní, tranzitivní, není symetrická:** identita plus jedna jednosměrná dvojice, například \[1,2\].
+- **Tranzitivní, není reflexivní ani ireflexivní:** jedna smyčka, například {\[1,1\]}.
+- **Tranzitivní, není symetrická ani antisymetrická:** potřebuješ oboustrannou dvojici (kvůli tranzitivitě musí mít i smyčky) a jednosměrnou dvojici: {\[1,1\],\[2,2\],\[1,2\],\[2,1\],\[4,3\]}.
 
-### 13.1 Relace a operace s nimi
+## 9. Časté chyby
 
-| Pojem | Definice (logický zápis) |
+1. Zapomenutá smyčka u prvku, který se v relaci jinak nevyskytuje (úl. 15, prvek 4).
+2. Přehlédnutá cesta při kontrole tranzitivity. Pomáhá projít dvojice podle prvního prvku.
+3. Záměna symetrie a antisymetrie. Antisymetrie se týká jen *různých* prvků.
+4. Tvrzení „není reflexivní, takže je ireflexivní“. Neplatí.
+5. Důkaz vlastnosti na jednom příkladu. Příklad stačí pouze k *vyvrácení*.
+6. Při skládání relací zaměněné pořadí. V této sbírce je (R ∘ S): nejdřív S, potom R.
+7. U svazů kontrola jen největšího a nejmenšího prvku (viz R₆).
+8. Ekvivalence se zadanou podmínkou, kde je v obou stranách nedefinovaný výraz (například x/y při y = 0).
+
+## 10. Cvičení na procvičení
+
+U každé relace urči, které z vlastností R, I, S, A, T má, a zda jde o ekvivalenci nebo uspořádání. Klíč je pod úlohami.
+
+1. M = {1,2,3}, R = {\[1,1\],\[2,2\],\[3,3\],\[1,2\],\[2,3\]}.
+2. Na ℤ: x ∼ y ⇔ 3 ∣ (x − y).
+3. Na ℕ: x R y ⇔ x < y.
+4. Na ℝ: x R y ⇔ x − y ∈ ℚ.
+5. Na ℤ: x R y ⇔ x − y je liché.
+6. Na ℕ: x R y ⇔ x ∣ y.
+
+### Klíč
+
+1. Reflexivní, antisymetrická, není symetrická, **není tranzitivní** (1R2 a 2R3, ale \[1,3\] ∉ R). Není to ekvivalence ani uspořádání. Doplněním \[1,3\] vznikne uspořádání (řetěz 1 < 2 < 3).
+2. Ekvivalence, tři třídy (zbytky 0, 1, 2).
+3. Ireflexivní, antisymetrická (předpoklad nastane jen prázdně), tranzitivní. Je to ostré uspořádání, ne neostré.
+4. Ekvivalence: reflexivita (0 ∈ ℚ), symetrie (opačné číslo k racionálnímu je racionální), tranzitivita (součet dvou racionálních čísel je racionální).
+5. Ireflexivní (x − x = 0 je sudé), symetrická, není tranzitivní (1R2, 2R3, ale 1 − 3 = −2 je sudé), není antisymetrická (1R2 i 2R1).
+6. Reflexivní, antisymetrická (na ℕ z m ∣ n a n ∣ m plyne m = n), tranzitivní, takže uspořádání. Není lineární (2 a 3 jsou nesrovnatelné).
+
+## 11. Doplněk: řešení úlohy 4 přes tabulky
+
+Tabulka (matice) relace má **řádek = první prvek**, **sloupec = druhý prvek**. Jednička na pozici (a, b) znamená \[a, b\] ∈ R, nula znamená, že dvojice v relaci není. Tabulka je pro konečné relace nejrychlejší způsob, jak vlastnosti ověřovat.
+
+### Jak číst vlastnosti z tabulky
+
+| Vlastnost | Co hledat v tabulce |
 | --- | --- |
-| **Relace R** (z A do B) | R ⊆ A × B, a xRy ⇔ \[x,y\] ∈ R |
-| **Rovnost relací** | R = S ⇔ ∀x, y: (\[x,y\] ∈ R ⇔ \[x,y\] ∈ S) |
-| **Inkluze relací** | R ⊆ S ⇔ ∀x, y: (\[x,y\] ∈ R ⇒ \[x,y\] ∈ S) |
-| **Sjednocení / průnik** | \[x,y\] ∈ R ∪ S ⇔ \[x,y\] ∈ R ∨ \[x,y\] ∈ S; průnik analogicky s ∧ |
-| **Rozdíl** | \[x,y\] ∈ R \\ S ⇔ \[x,y\] ∈ R ∧ \[x,y\] ∉ S |
-| **Doplněk R̄** (vůči univerzu A × B) | \[x,y\] ∈ R̄ ⇔ \[x,y\] ∉ R |
-| **Inverzní relace R⁻¹** | \[x,y\] ∈ R⁻¹ ⇔ \[y,x\] ∈ R |
-| **Složení R ∘ S** (podle sbírky: nejdřív S, potom R) | \[x,z\] ∈ R ∘ S ⇔ ∃y: \[x,y\] ∈ S ∧ \[y,z\] ∈ R |
-| **Sjednocení systému ⋃ Sᵢ** (i ∈ I) | \[x,y\] ∈ ⋃ Sᵢ ⇔ ∃i ∈ I: \[x,y\] ∈ Sᵢ |
-| **Průnik systému ⋂ Sᵢ** (i ∈ I) | \[x,y\] ∈ ⋂ Sᵢ ⇔ ∀i ∈ I: \[x,y\] ∈ Sᵢ |
-| **Mocnina Rⁿ** | R¹ = R, Rⁿ⁺¹ = R ∘ Rⁿ |
-| **Tranzitivní uzávěr R⁺** | R⁺ = R ∪ R² ∪ R³ ∪ …, tedy \[a,b\] ∈ R⁺ ⇔ ∃n ≥ 1: \[a,b\] ∈ Rⁿ |
+| Reflexivní | na úhlopříčce (levý horní → pravý dolní roh) jsou **samé jedničky** |
+| Ireflexivní | na úhlopříčce jsou **samé nuly** |
+| Symetrická | tabulka je **zrcadlově souměrná podle úhlopříčky**, pozice (a,b) a (b,a) mají stejnou hodnotu |
+| Antisymetrická | mimo úhlopříčku **nikdy nejsou jedničky na obou pozicích (a,b) i (b,a)** |
+| Tranzitivní | pro každou jedničku na pozici (a,b) musí být **každá jednička z řádku b také v řádku a** |
 
-Pozor na tři věci:
+Poslední pravidlo je nejpraktičtější. Jednička (a,b) říká „z a se dostanu do b“. Řádek b ukazuje, kam se dostanu z b, a tam se musím dostat i přímo z a.
 
-1. Při skládání dává **složení pořadí zprava doleva**. Kdo zamění R a S, dostane špatný důkaz i špatný výsledek.
-2. Doplněk má smysl jen vzhledem k předem danému univerzu. U relace R ⊆ A × B je to A × B.
-3. Rovnost relací se dokazuje stejně jako rovnost množin, jen prvky jsou dvojice.
+### 4a) Symetrická, reflexivní, ne tranzitivní
 
-### 13.2 Vlastnosti relace na množině M (s kvantifikátory)
+Ra = {\[1,1\], \[2,2\], \[3,3\], \[4,4\], \[1,2\], \[2,1\], \[1,3\], \[3,1\]}
 
-| Vlastnost | Definice |
-| --- | --- |
-| Reflexivní | ∀x ∈ M: xRx |
-| Ireflexivní | ∀x ∈ M: ¬(xRx) |
-| Symetrická | ∀x, y ∈ M: (xRy ⇒ yRx) |
-| Antisymetrická | ∀x, y ∈ M: (xRy ∧ yRx ⇒ x = y) |
-| Tranzitivní | ∀x, y, z ∈ M: (xRy ∧ yRz ⇒ xRz) |
-| Ekvivalence | reflexivní ∧ symetrická ∧ tranzitivní |
-| Uspořádání | reflexivní ∧ antisymetrická ∧ tranzitivní |
-| Třída ekvivalence prvku a | \[a\] = {x ∈ M : xRa} |
-| Rozklad M | systém množin Bᵢ ⊆ M, kde Bᵢ ≠ ∅, Bᵢ ∩ Bⱼ = ∅ pro i ≠ j a ⋃ Bᵢ = M |
-| Supremum a ∨ b | nejmenší prvek mezi horními závorami a i b (jedinečný) |
-| Infimum a ∧ b | největší prvek mezi dolními závorami a i b (jedinečný) |
-| Svazově uspořádaná množina | uspořádaná množina, kde ∀a, b ∃ supremum i infimum |
+|  | 1 | 2 | 3 | 4 |
+| --- | --- | --- | --- | --- |
+| **1** | 1 | 1 | 1 | 0 |
+| **2** | 1 | 1 | 0 | 0 |
+| **3** | 1 | 0 | 1 | 0 |
+| **4** | 0 | 0 | 0 | 1 |
 
-### 13.3 Zobrazení (úlohy 27 až 29)
+- Úhlopříčka je samé 1, takže je reflexivní.
+- Tabulka je souměrná podle úhlopříčky, takže je symetrická.
+- Tranzitivita selže: pozice (2,1) je 1, řádek 1 má jedničky ve sloupcích 1, 2, 3, ale řádek 2 nemá jedničku ve sloupci 3. Chybí \[2,3\].
 
-| Pojem | Definice |
-| --- | --- |
-| **Zobrazení f z A do B** | relace f ⊆ A × B, pro kterou ∀x ∈ A ∃!y ∈ B: \[x,y\] ∈ f |
-| **Obraz množiny C ⊆ A** | f(C) = {y : ∃x ∈ C: \[x,y\] ∈ f} |
-| **Vzor množiny D ⊆ B** | f⁻¹(D) = {x ∈ A : ∃y ∈ D: \[x,y\] ∈ f}, u zobrazení tedy {x : f(x) ∈ D} |
-| **Prosté** (injekce) | ∀x₁, x₂: f(x₁) = f(x₂) ⇒ x₁ = x₂ |
-| **Na** (surjekce) | ∀y ∈ B ∃x ∈ A: f(x) = y |
-| **Vzájemně jednoznačné** (bijekce) | prosté a na |
+### 4b) Reflexivní, tranzitivní, ne symetrická
 
-Zobrazení musí mít **každý prvek A jako první složku právě jedné dvojice**. Právě proto selže relace x² + y² = 1 na ℝ: pro x = 0 vychází y = 1 i y = −1, a pro x = 2 nevychází žádné y.
+Rb = {\[1,1\], \[2,2\], \[3,3\], \[4,4\], \[1,2\]}
 
-## 14. Šablony důkazů a vzorové důkazy
+|  | 1 | 2 | 3 | 4 |
+| --- | --- | --- | --- | --- |
+| **1** | 1 | 1 | 0 | 0 |
+| **2** | 0 | 1 | 0 | 0 |
+| **3** | 0 | 0 | 1 | 0 |
+| **4** | 0 | 0 | 0 | 1 |
 
-### 14.1 Tři šablony
+- Úhlopříčka je samé 1, takže je reflexivní.
+- Pozice (1,2) je 1, ale (2,1) je 0, takže není symetrická.
+- Tranzitivita: u jedničky (1,2) má řádek 2 jedinou jedničku ve sloupci 2, a ta je i v řádku 1. Ostatní jedničky leží na úhlopříčce a tam podmínka platí triviálně.
 
-**A) Rovnost relací R = S (dvěma inkluzemi):**
+### 4c) Tranzitivní, ani reflexivní, ani ireflexivní
 
-1. (⊆) Nechť \[x,z\] ∈ R je libovolná dvojice. Rozepiš definici, upravuj řetězem implikací (kapitoly 2 až 9 a 12) a dojdi k \[x,z\] ∈ S.
-2. (⊇) Totéž opačně.
-3. Závěr: R = S.
+Rc = {\[1,2\], \[1,4\], \[2,2\], \[2,4\]}
 
-Pokud je každý krok ekvivalence (⇔), stačí jeden řetěz a obě inkluze naráz. Řetěz ⇔ ale používej jen tehdy, když jsi u každého kroku jistý, že platí oběma směry.
+|  | 1 | 2 | 3 | 4 |
+| --- | --- | --- | --- | --- |
+| **1** | 0 | 1 | 0 | 1 |
+| **2** | 0 | 1 | 0 | 1 |
+| **3** | 0 | 0 | 0 | 0 |
+| **4** | 0 | 0 | 0 | 0 |
 
-**B) Inkluze R ⊆ S:** jen první polovina šablony A. Používá se u úlohy 11 (a), (b), (c).
+- Úhlopříčka je 0, 1, 0, 0. Není tam samé 1 ani samé 0, takže relace není reflexivní ani ireflexivní.
+- Tranzitivita: jednička (1,2) vede do řádku 2, který má jedničky ve sloupcích 2 a 4, a stejné jedničky má řádek 1. Jednička (1,4) vede do prázdného řádku 4. Totéž platí pro (2,2) a (2,4).
 
-**C) Důkaz, že inkluze neplatí oběma směry (protipříklad):** zvol malé konkrétní relace (několik dvojic), spočítej obě strany a ukaž dvojici, která je na jedné straně a na druhé ne.
+### 4d) Tranzitivní, ani symetrická, ani antisymetrická
 
-### 14.2 Co použít kde (nápověda k úloze 10 a 11)
+Rd = {\[1,1\], \[1,2\], \[2,1\], \[2,2\], \[3,4\]}
 
-| Úloha | Klíčové pravidlo |
-| --- | --- |
-| 10 (a) složení a sjednocení | ∃ se rozdělí přes ∨ (12.3), distributivita (kap. 2) |
-| 10 (b) inverze složení | přejmenování y, komutativita ∧ (kap. 4), definice R⁻¹ |
-| 10 (c) inverze rozdílu | definice R⁻¹ a rozdílu, žádné kvantifikátory |
-| 10 (d) doplněk a inverze, dvojitá inverze | definice R̄ a R⁻¹, ¬¬p ⇔ p (kap. 6) |
-| 10 (e) systém relací | zaměnění ∃y a ∃i (12.5), definice ⋃ |
-| 11 (a), (b) průnik | ∃ nad ∧ jde jen jedním směrem (12.3) |
-| 11 (c) rozdíl složení | negace ∃ (12.2) a instanciace (12.7) |
+|  | 1 | 2 | 3 | 4 |
+| --- | --- | --- | --- | --- |
+| **1** | 1 | 1 | 0 | 0 |
+| **2** | 1 | 1 | 0 | 0 |
+| **3** | 0 | 0 | 0 | 1 |
+| **4** | 0 | 0 | 0 | 0 |
 
-### 14.3 Vzorový důkaz 10 (b): (R ∘ S)⁻¹ = S⁻¹ ∘ R⁻¹
+- Pozice (3,4) je 1, ale (4,3) je 0, takže není symetrická.
+- Pozice (1,2) i (2,1) jsou 1 při 1 ≠ 2, takže není antisymetrická.
+- Tranzitivita: řádky 1 a 2 jsou stejné, takže podmínka mezi nimi platí oboustranně. Jednička (3,4) vede do prázdného řádku 4.
 
-Každý krok je ekvivalence, takže stačí jeden řetěz. Nechť \[x,z\] je libovolná dvojice.
-
-| Krok | Tvrzení | Důvod |
-| --- | --- | --- |
-| 1 | \[x,z\] ∈ (R ∘ S)⁻¹ |  |
-| 2 | \[z,x\] ∈ R ∘ S | definice inverze |
-| 3 | ∃y: \[z,y\] ∈ S ∧ \[y,x\] ∈ R | definice složení |
-| 4 | ∃y: \[y,z\] ∈ S⁻¹ ∧ \[x,y\] ∈ R⁻¹ | definice inverze (dvakrát) |
-| 5 | ∃y: \[x,y\] ∈ R⁻¹ ∧ \[y,z\] ∈ S⁻¹ | komutativita ∧ |
-| 6 | \[x,z\] ∈ S⁻¹ ∘ R⁻¹ | definice složení (nejdřív R⁻¹, potom S⁻¹) |
-
-### 14.4 Vzorový důkaz 10 (c): (R \\ S)⁻¹ = R⁻¹ \\ S⁻¹
-
-| Krok | Tvrzení | Důvod |
-| --- | --- | --- |
-| 1 | \[x,y\] ∈ (R \\ S)⁻¹ |  |
-| 2 | \[y,x\] ∈ R \\ S | definice inverze |
-| 3 | \[y,x\] ∈ R ∧ \[y,x\] ∉ S | definice rozdílu |
-| 4 | \[x,y\] ∈ R⁻¹ ∧ \[x,y\] ∉ S⁻¹ | definice inverze (dvakrát) |
-| 5 | \[x,y\] ∈ R⁻¹ \\ S⁻¹ | definice rozdílu |
-
-### 14.5 Vzorový důkaz 10 (e), první rovnost: R ∘ (⋃ Sᵢ) = ⋃ (R ∘ Sᵢ)
-
-| Krok | Tvrzení | Důvod |
-| --- | --- | --- |
-| 1 | \[x,z\] ∈ R ∘ (⋃ Sᵢ) |  |
-| 2 | ∃y: \[x,y\] ∈ ⋃ Sᵢ ∧ \[y,z\] ∈ R | definice složení |
-| 3 | ∃y: (∃i: \[x,y\] ∈ Sᵢ) ∧ \[y,z\] ∈ R | definice ⋃ |
-| 4 | ∃y ∃i: \[x,y\] ∈ Sᵢ ∧ \[y,z\] ∈ R | i se v druhém členu nevyskytuje, lze ho vytknout (12.4) |
-| 5 | ∃i ∃y: \[x,y\] ∈ Sᵢ ∧ \[y,z\] ∈ R | zaměnění stejných kvantifikátorů (12.5) |
-| 6 | ∃i: \[x,z\] ∈ R ∘ Sᵢ | definice složení |
-| 7 | \[x,z\] ∈ ⋃ (R ∘ Sᵢ) | definice ⋃ |
-
-### 14.6 Vzorový důkaz 11 (a): R ∘ (S₁ ∩ S₂) ⊆ R ∘ S₁ ∩ R ∘ S₂
-
-Nechť \[x,z\] ∈ R ∘ (S₁ ∩ S₂). Pak existuje y s \[x,y\] ∈ S₁ ∩ S₂ a \[y,z\] ∈ R, tedy \[x,y\] ∈ S₁ ∧ \[x,y\] ∈ S₂ ∧ \[y,z\] ∈ R. **Stejné y** ukazuje, že \[x,z\] ∈ R ∘ S₁ a zároveň \[x,z\] ∈ R ∘ S₂. To je \[x,z\] ∈ R ∘ S₁ ∩ R ∘ S₂.
-
-**Protipříklad pro opačný směr.** Nechť S₁ = {\[1,2\]}, S₂ = {\[1,3\]}, R = {\[2,4\], \[3,4\]}.
-
-- S₁ ∩ S₂ = ∅, takže R ∘ (S₁ ∩ S₂) = ∅.
-- R ∘ S₁ = {\[1,4\]} (přes y = 2) a R ∘ S₂ = {\[1,4\]} (přes y = 3), jejich průnik je {\[1,4\]}.
-
-Pravá strana obsahuje \[1,4\], levá ne, rovnost neplatí. Dvojici \[1,4\] zde svědčí **různá y** (2 pro S₁ a 3 pro S₂), což je přesně slabina z 12.3.
-
-### 14.7 Vzorový důkaz 11 (c): R ∘ S₁ \\ R ∘ S₂ ⊆ R ∘ (S₁ \\ S₂)
-
-Nechť \[x,z\] ∈ R ∘ S₁ \\ R ∘ S₂, tedy \[x,z\] ∈ R ∘ S₁ a \[x,z\] ∉ R ∘ S₂.
-
-1. Z \[x,z\] ∈ R ∘ S₁ plyne: nechť y je takový prvek, že \[x,y\] ∈ S₁ a \[y,z\] ∈ R (eliminace ∃, 12.7).
-2. Z \[x,z\] ∉ R ∘ S₂ plyne po negaci ∃ (12.2): ∀t: ¬(\[x,t\] ∈ S₂ ∧ \[t,z\] ∈ R).
-3. Dosadíme t = y (instanciace). Protože \[y,z\] ∈ R, musí platit \[x,y\] ∉ S₂.
-4. Tedy \[x,y\] ∈ S₁ \\ S₂ a \[y,z\] ∈ R, což je \[x,z\] ∈ R ∘ (S₁ \\ S₂).
-
-**Protipříklad pro opačný směr.** Nechť S₁ = {\[1,2\], \[1,3\]}, S₂ = {\[1,3\]}, R = {\[2,4\], \[3,4\]}. Pak S₁ \\ S₂ = {\[1,2\]} a R ∘ (S₁ \\ S₂) = {\[1,4\]}. Ale R ∘ S₁ = {\[1,4\]} a R ∘ S₂ = {\[1,4\]}, takže jejich rozdíl je prázdný. Dvojice \[1,4\] je na pravé straně a na levé ne.
-
-### 14.8 Kontrolní seznam před odevzdáním důkazu
-
-1. Je zřejmé, co je dokazováno (rovnost nebo jen inkluze)? U rovnosti jsou obě inkluze?
-2. Je u každého kroku uveden **důvod** (definice nebo zákon z této sbírky)?
-3. Je složení psáno ve správném pořadí (nejdřív druhá relace)?
-4. Nezaměňují se kvantifikátory jiného druhu (∃ a ∀) a nerozdělují se ∃ přes ∧ nebo ∀ přes ∨ oběma směry?
-5. Je „libovolné“ x skutečně libovolné, tedy nebylo mu mezitím přiřazeno konkrétní číslo?
-6. U tvrzení „neplatí“ je uveden **konkrétní protipříklad**, u kterého je spočtena každá strana zvlášť?
+**Typická chyba:** kdyby v 4d chyběly smyčky \[1,1\] a \[2,2\], tabulka by měla v levém horním rohu nuly na úhlopříčce a tranzitivita by selhala. Jednička (1,2) vede do řádku 2, který má jedničku ve sloupci 1, ale pozice (1,1) je 0.
